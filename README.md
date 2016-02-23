@@ -100,7 +100,7 @@ Assist the **coordinator** to supervise proposed and accepted proposals
 	- **Capability**: Discuss proposal
 		- *Feature*: Comment proposal
 	- **Capability**: Process proposal
-		- *Feature*: Pubish proposal
+		- *Feature*: Publish proposal
 		- *Feature*: Reject proposal
 	- **Capability**: Accept thesis project proposal
 		- *Feature*: Register thesis project
@@ -111,11 +111,11 @@ Facilitate **dissemination** of thesis project **defenses**
 
 - **Stakeholder**: Professor
 	- **Capability**: Communicate defense date
-		- *Feature*: Deposit Project
+		- *Feature*: Deposit project
 
 ## Thesis Proposals Stages
 
-![States and Transitions](http://g.gravizo.com/g?
+![States and Transitions Diagram](http://g.gravizo.com/g?
 digraph G {
    "" [shape=plaintext];
    "" -> "Draft" [label="create"];
@@ -135,4 +135,92 @@ digraph G {
    "Deposited" -> "Deposited" [label="rate organization"];
    "Draft" -> "" [label="remove"];
  }
+)
+
+## Entities Model
+
+![Entities Model Diagram](http://g.gravizo.com/g?
+@startuml;
+class Proposal {;
+   string title;
+   string description;
+};
+class Event {;
+   DateTime dateTime;
+   User agent;
+};
+class ProposalSubmission extends Event {;
+   Proposal submits;
+   Proponent agent;
+};
+ProposalSubmission "N submittedBy" -- "1 submits" Proposal;
+class ProposalPublication extends Event {;
+   ProposalSubmission publishes;
+   Coordinator agent;
+};
+ProposalPublication "1 publishedBy" -- "1 publishes" ProposalSubmission ;
+class Comment {;
+   String text;
+   User author; ;
+};
+Comment "0..N" -- "1" ProposalPublication;
+class ProposalRejection extends Event {;
+   Coordinator agent;
+};
+ProposalRejection -- ProposalSubmission;
+ProposalRejection -- ProposalPublication;
+class ProposalWithdrawal extends Event {;
+   Proponent agent;
+};
+ProposalWithdrawal -- ProposalSubmission;
+ProposalWithdrawal -- ProposalRegistration;
+class ProposalRegistration extends Event {;
+   Coordinator agent;
+};
+ProposalRegistration -- ProposalPublication;
+class ProposalDeposit extends Event {;
+   Professor agent;
+};
+ProposalDeposit -- ProposalRegistration;
+class Offer  extends Event {;
+};
+Offer -- ProposalPublication;
+class StudentOffer  extends Offer {;
+   Student agent;
+};
+StudentOffer "N" -- "1" ProposalPublication;
+class Assignment extends Event {;
+   Proponent agent;
+};
+Assignment "0..1" -- "1" Offer;
+class StudentsAssignment  extends Assignment {;
+};
+StudentsAssignment "0..1" -- "1..N" StudentOffer;
+class DirectorOffer  extends Offer {;
+   Professor agent;
+};
+DirectorOffer "0..N" -- "1" ProposalPublication;
+class CoDirectorOffer  extends Offer {;
+   Professor agent;
+};
+CoDirectorOffer "0..N" -- "1" ProposalPublication;
+class DirectorAssignment  extends Assignment {;
+};
+DirectorAssignment "0..1" -- "1" DirectorOffer;
+class CoDirectorAssignment  extends Assignment {;
+};
+CoDirectorAssignment "0..1" -- "1" CoDirectorOffer;
+class User {;
+};
+class Proponent extends User {;
+};
+class Student extends Proponent {;
+};
+class Professor extends Proponent {;
+};
+class Organization extends Proponent {;
+};
+class Coordinator extends User {;
+};
+@enduml
 )
