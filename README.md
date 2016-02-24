@@ -149,15 +149,11 @@ skinparam class {;
 	BackgroundColor<<Assignment>> LightGreen;
 };
 class Proposal {;
-   String title;
-   String description;
-   String degree;
+   String title, description, degree, status;
    String[] topics;
    Proponent creator;
    Student[] students;
-   Professor director;
-   Professor codirector;
-   String status;
+   Professor director, codirector;
 };
 class Event <<Event>> {;
    DateTime dateTime;
@@ -222,6 +218,15 @@ DirectorAssignment "0..1 assignedBy" .. "1 assigns" DirectorOffer;
 class CoDirectorAssignment <<Assignment>> extends Assignment {;
 };
 CoDirectorAssignment "0..1 assignedBy" .. "1 assigns" CoDirectorOffer;
+@enduml
+)
+
+![User Entities Model Diagram](http://g.gravizo.com/g?
+@startuml;
+hide stereotype;
+skinparam class {;
+	BackgroundColor White;
+};
 class User {;
 };
 class Proponent extends User {;
