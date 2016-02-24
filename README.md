@@ -37,7 +37,7 @@ Facilitate that **professors** propose thesis projects and find interested **stu
 	- **Capability**: Discuss proposal
 		- *Feature*: Comment proposal
 	- **Capability**: Express interest in proposal
-		- *Feature*: Offer as Student
+		- *Feature*: Offer as student
 
 ### Goal
 Facilitate that **students** propose thesis projects and find interested **directors**, and other *students*
@@ -67,7 +67,7 @@ Facilitate that **students** propose thesis projects and find interested **direc
 Facilitate that **organizations** do thesis projects with **students** and **professors**
 
 - **Stakeholder**: Organization
-	- **Capability**: **Propose project
+	- **Capability**: Propose project
 		- *Feature*: Create proposal
 		- *Feature*: Submit proposal
 	- **Capability**: Assign proposal team
@@ -83,7 +83,7 @@ Facilitate that **organizations** do thesis projects with **students** and **pro
 	- **Capability**: Discuss proposal
 		- *Feature*: Comment proposal
 	- **Capability**: Express interest in proposal
-		- *Feature*: Offer as Student
+		- *Feature*: Offer as student
 	- **Capability**: Share experience with organization
 		- *Feature*: Rate organization
 
