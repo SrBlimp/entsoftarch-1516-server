@@ -21,6 +21,7 @@ Facilitate that **professors** propose thesis projects and find interested **stu
 - **Stakeholder**: Professor
 	- **Capability**: Propose project
 		- *Feature*: Create proposal
+		- *Feature*: Edit proposal
 		- *Feature*: Submit proposal
 	- **Capability**: Discuss proposal
 		- *Feature*: Comment proposal
@@ -45,6 +46,7 @@ Facilitate that **students** propose thesis projects and find interested **direc
 - **Stakeholder**: Student
 	- **Capability**: Propose Project
 		- *Feature*: Create proposal
+		- *Feature*: Edit proposal
 		- *Feature*: Propose project
 	- **Capability**: Discuss proposal
 		- *Feature*: Comment proposal
@@ -69,6 +71,7 @@ Facilitate that **organizations** do thesis projects with **students** and **pro
 - **Stakeholder**: Organization
 	- **Capability**: Propose project
 		- *Feature*: Create proposal
+		- *Feature*: Edit proposal
 		- *Feature*: Submit proposal
 	- **Capability**: Assign proposal team
 		- *Feature*: Assign director
@@ -120,6 +123,7 @@ digraph G {
    "" [shape=plaintext];
    "" -> "Draft" [label="create"];
    "Draft" -> "Proposed" [label="submit"];
+   "Draft" -> "Draft" [label="edit"];
    "Proposed" -> "Draft" [label="withdraw"];
    "Proposed" -> "Published" [label="publish %28coordinator%29"];
    "Proposed" -> "Draft" [label="reject %28coordinator%29"];
