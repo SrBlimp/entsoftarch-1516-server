@@ -1,0 +1,21 @@
+package cat.udl.eps.entsoftarch.thesismarket.domain;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.*;
+import java.time.ZonedDateTime;
+
+/**
+ * Created by http://rhizomik.net/~roberto/
+ */
+@Entity
+public abstract class Event {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    ZonedDateTime dateTime;
+
+    //User agent;
+}
