@@ -280,23 +280,24 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
-    @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")
-    public void iHaveCreatedAProposalSubmissionThatSubmitsAProposalWithTitle(String title) throws Throwable {
-
+    @Then("^I have created a \"([^\"]*)\" that \"([^\"]*)\" a \"([^\"]*)\" with \"([^\"]*)\" \"([^\"]*)\"$")
+    public void iHaveCreatedAThatAWith(String newType, String relation, String relatedType, String relatedTypeProperty, String propertyValue) throws Throwable {
         String response = result
-                .andDo(print())
                 .andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("$._links." + newType).exists())
                 .andReturn().getResponse().getContentAsString();
 
-        String submitsUri = JsonPath.read(response, "$._links.submits.href");
+        String relationUri = JsonPath.read(response, "$._links." + relation + ".href");
 
-        result = mockMvc.perform(get(submitsUri)
+        result = mockMvc.perform(get(relationUri)
                 .accept(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$.title", is(title)));
+                .andExpect(jsonPath("$._links." + relatedType).exists())
+                .andExpect(jsonPath("$." + relatedTypeProperty, is(propertyValue)));
     }
 
     @Then("^I have created a withdrawal of the submission of the proposal titled \"([^\"]*)\"$")
