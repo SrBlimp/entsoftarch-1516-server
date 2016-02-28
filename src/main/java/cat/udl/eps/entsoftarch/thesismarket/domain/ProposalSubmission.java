@@ -17,10 +17,16 @@ public class ProposalSubmission extends Event {
     @NotNull
     private Proposal submits;
     @OneToOne(mappedBy = "publishes")
+    @Nullable
+    @JsonIgnore
     private ProposalPublication publishedBy;
     @OneToOne(mappedBy = "rejects")
+    @Nullable
+    @JsonIgnore
     private ProposalRejection rejectedBy;
     @OneToOne(mappedBy = "withdraws")
+    @Nullable
+    @JsonIgnore
     private ProposalWithdrawal withdrawedBy;
 
     public Proponent getAgent() { return agent; }
