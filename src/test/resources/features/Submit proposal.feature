@@ -6,4 +6,4 @@ Feature: Submit proposal
   Scenario: Submit existing proposal
     Given there is an existing proposal with title "Really interesting project"
     When I submit the proposal with title "Really interesting project"
-    Then I have created a proposal submission that submits a proposal with title "Really interesting project"
+    Then I have created a "proposalSubmission" that "submits" a "proposal" with "title" "Really interesting project"
