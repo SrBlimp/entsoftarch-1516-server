@@ -13,7 +13,7 @@ import java.time.ZonedDateTime;
  * Created by http://rhizomik.net/~roberto/
  */
 @Entity
-public class ProposalDeposit extends Event {
+public class ProjectDeposit extends Event {
     @ManyToOne
     Professor agent;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

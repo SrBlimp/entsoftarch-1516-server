@@ -25,5 +25,5 @@ public class ProposalRegistration extends Event {
     @OneToOne(mappedBy = "deposits")
     @Nullable
     @JsonIgnore
-    private ProposalDeposit depositedBy;
+    private ProjectDeposit depositedBy;
 }
