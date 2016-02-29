@@ -1,7 +1,9 @@
 package cat.udl.eps.entsoftarch.thesismarket.domain;
 
+import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 /**
  * Created by http://rhizomik.net/~roberto/
@@ -12,12 +14,12 @@ public class ProposalSubmission extends Event {
     private Proponent agent;
     @ManyToOne
     private Proposal submits;
-/*    @OneToOne(mappedBy = "publishes")
+    @OneToOne(mappedBy = "publishes")
     private ProposalPublication publishedBy;
     @OneToOne(mappedBy = "rejects")
     private ProposalRejection rejectedBy;
     @OneToOne(mappedBy = "withdraws")
-    private ProposalWithdrawal withdrawedBy;*/
+    private ProposalWithdrawal withdrawedBy;
 
     public Proponent getAgent() { return agent; }
 
@@ -27,7 +29,7 @@ public class ProposalSubmission extends Event {
 
     public void setSubmits(Proposal submits) { this.submits = submits; }
 
-/*    @Nullable
+    @Nullable
     public ProposalPublication getPublishedBy() { return publishedBy; }
 
     public void setPublishedBy(ProposalPublication publishedBy) {
@@ -46,5 +48,5 @@ public class ProposalSubmission extends Event {
 
     public void setWithdrawedBy(ProposalWithdrawal withdrawedBy) {
         this.withdrawedBy = withdrawedBy;
-    }*/
+    }
 }
