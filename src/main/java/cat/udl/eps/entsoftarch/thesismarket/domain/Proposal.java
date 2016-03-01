@@ -77,6 +77,11 @@ public class Proposal {
     public Set<ProposalSubmission> getSubmittedBy() { return submittedBy; }
 
     public void setSubmittedBy(Set<ProposalSubmission> submittedBy) { this.submittedBy = submittedBy; }
+
+    @Override
+    public String toString() {
+        return "Proposal \"" + title + "\" by " + creator + ", status: " + status;
+    }
 }
 
 

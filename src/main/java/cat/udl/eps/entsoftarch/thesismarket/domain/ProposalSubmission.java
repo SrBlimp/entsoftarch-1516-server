@@ -49,4 +49,9 @@ public class ProposalSubmission extends Event {
     public void setWithdrawedBy(ProposalWithdrawal withdrawedBy) {
         this.withdrawedBy = withdrawedBy;
     }
+
+    @Override
+    public String toString() {
+        return "ProposalSubmission of " + submits;
+    }
 }
