@@ -15,4 +15,17 @@ public class ProposalWithdrawal extends Event {
     @OneToOne
     @NotNull
     ProposalSubmission withdraws;
+
+    public Proponent getAgent() { return agent; }
+
+    public void setAgent(Proponent agent) { this.agent = agent; }
+
+    public ProposalSubmission getWithdraws() { return withdraws; }
+
+    public void setWithdraws(ProposalSubmission withdraws) { this.withdraws = withdraws; }
+
+    @Override
+    public String toString() {
+        return "ProposalWithdrawal of " + withdraws;
+    }
 }
