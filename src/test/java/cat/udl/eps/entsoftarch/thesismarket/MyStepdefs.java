@@ -7,7 +7,10 @@ import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
 import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
+import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import com.jayway.jsonpath.JsonPath;
+import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -278,34 +281,10 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$.title", is(title)));
     }
 
-    @Then("^I have created a withdrawal of the submission of the proposal titled \"([^\"]*)\"$")
-    public void iHaveCreatedAWithdrawalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
-
-        String response = result
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-
-        String withdrawsUri = JsonPath.read(response, "$._links.withdraws.href");
-
-        result = mockMvc.perform(get(withdrawsUri)
-                .accept(MediaType.APPLICATION_JSON));
-
-        response = result
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andReturn().getResponse().getContentAsString();
-
-        String submitsUri = JsonPath.read(response, "$._links.submits.href");
-
-        result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
-
-        result.andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(jsonPath("$.title", is(title)));
+    @Then("^I receive a (\\d+) Not found error$")
+    public void iReceiveANotFoundError(int error) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
     }
 
     @Then("^I have created a comment that comments a proposal with text \"([^\"]*)\"$")
