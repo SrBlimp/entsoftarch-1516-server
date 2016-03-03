@@ -7,3 +7,8 @@ Feature: Submit proposal
     Given there is an existing proposal with title "Really interesting project"
     When I submit the proposal with title "Really interesting project"
     Then I have created a proposal submission that submits a proposal with title "Really interesting project"
+
+  Scenario: Submit non existing proposal
+    Given there is an existing proposal with title "Really interesting project"
+    When I submit the proposal with title "Really interesting project"
+    Then I receive a 404 Not found error

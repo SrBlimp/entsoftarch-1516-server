@@ -319,8 +319,8 @@ public class MyStepdefs {
 
     @Then("^I receive a (\\d+) Not found error$")
     public void iReceiveANotFoundError(int error) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        result.andExpect(status().is4xxClientError())
+                .andExpect(status().is(error));
     }
 
     @Then("^I have created a comment that comments a proposal with text \"([^\"]*)\"$")
