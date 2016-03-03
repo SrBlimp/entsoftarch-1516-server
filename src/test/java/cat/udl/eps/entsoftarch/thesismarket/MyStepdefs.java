@@ -1,8 +1,10 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
 import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalWithdrawalRepository;
@@ -44,10 +46,16 @@ public class MyStepdefs {
     private MockMvc mockMvc;
     private ResultActions result;
 
-    @Autowired private WebApplicationContext wac;
-    @Autowired private ProposalRepository proposalRepository;
-    @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
-    @Autowired private ProposalWithdrawalRepository proposalWithdrawalRepository;
+    @Autowired
+    private WebApplicationContext wac;
+    @Autowired
+    private ProposalRepository proposalRepository;
+    @Autowired
+    private ProposalSubmissionRepository proposalSubmissionRepository;
+    @Autowired
+    private ProposalWithdrawalRepository proposalWithdrawalRepository;
+    @Autowired
+    private ProposalPublicationRepository proposalPublicationRepository;
 
     @Before
     public void setup() {
@@ -147,6 +155,41 @@ public class MyStepdefs {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.title", is(title)));
+    }
+
+    @Given("^there is an existing proposal publication of a submission of a proposal with title \"([^\"]*)\"$")
+    public void thereIsAnExistingProposalPublicationOfASubmissionOfAProposalWithTitle(String title) throws Throwable {
+        ProposalPublication proposalPublication = new ProposalPublication();
+        proposalPublicationRepository.save(proposalPublication);
+    }
+
+
+    @When("^I comment the proposal with a comment with text \"([^\"]*)\"$")
+    public void iCommentTheProposalWithACommentWithText(String text) throws Throwable {
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes();
+        result = mockMvc.perform(post("/comments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"comments\": \"proposalPublications/" + proposalPublication.getId() + "\"" +
+                        "\"text\": \"" + text + "\"" + "}")
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @Then("^I have created a comment that comments a proposal with text \"([^\"]*)\"$")
+    public void iHaveCreatedACommentThatCommentsAProposalWithText(String text) throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String submitsUri = JsonPath.read(response, "$._links.comments.href");
+
+        result = mockMvc.perform(get(submitsUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.text", is(text)));
     }
 }
 
