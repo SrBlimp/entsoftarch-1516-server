@@ -388,7 +388,7 @@ public class MyStepdefs {
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
-        
+
     }
 
     @Then("^new proposal with title \"([^\"]*)\"$")
@@ -504,6 +504,12 @@ public class MyStepdefs {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
+    }
+
+    @Then("^I have edited the \"([^\"]*)\" that \"([^\"]*)\" the \"([^\"]*)\" with \"([^\"]*)\" \"([^\"]*)\"$")
+    public void iHaveEditedTheThatTheWith(String arg0, String arg1, String arg2, String arg3, String arg4) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
     }
 }
 
