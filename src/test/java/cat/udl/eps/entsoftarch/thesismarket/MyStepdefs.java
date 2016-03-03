@@ -1,9 +1,6 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
-import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
+import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
@@ -79,6 +76,15 @@ public class MyStepdefs {
         proposalSubmissionRepository.save(proposalSubmission);
     }
 
+    @And("^there is an existing proposal publication of a submission of the proposal titled \"([^\"]*)\"$")
+    public void thereIsAnExistingProposalPublicationOfASubmissionOfTheProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = new ProposalPublication();
+        proposalPublication.setPublishes(proposalSubmission);
+        proposalPublicationRepository.save(proposalPublication);
+    }
+
     @When("^I submit the proposal with title \"([^\"]*)\"$")
     public void iSubmitTheProposalWithTitle(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -103,6 +109,23 @@ public class MyStepdefs {
                 "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
 
         result = mockMvc.perform(post("/proposalWithdrawals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
+    public void iCommentTheProposalWithTitleWithACommentWithText(String title, String text) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+        Comment comment = new Comment();
+        comment.setComments(proposalPublication);
+
+        String message = String.format(
+                "{ \"comments\" : \"proposalPublications/%s\", \"text\":\"%s\"}", proposalPublication.getId(), text);
+
+        result = mockMvc.perform(post("/comments")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
@@ -157,43 +180,12 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$.title", is(title)));
     }
 
-    @And("^there is an existing proposal publication of a submission of the proposal titled \"([^\"]*)\"$")
-    public void thereIsAnExistingProposalPublicationOfASubmissionOfTheProposalTitled(String title) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalPublication proposalPublication = new ProposalPublication();
-        proposalPublication.setPublishes(proposalSubmission);
-        proposalPublicationRepository.save(proposalPublication);
-    }
-
-    @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
-    public void iCommentTheProposalWithTitleWithACommentWithText(String title, String text) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
-        result = mockMvc.perform(post("/comments")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"comments\": \"proposalPublications/" + proposalPublication.getId() + "\"" +
-                        "\"text\": \"" + text + "\"" + "}")
-                .accept(MediaType.APPLICATION_JSON));
-    }
-
 
     @Then("^I have created a comment that comments a proposal with text \"([^\"]*)\"$")
     public void iHaveCreatedACommentThatCommentsAProposalWithText(String text) throws Throwable {
-        String response = result
-                .andDo(print())
+
+        result.andDo(print())
                 .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-
-        String commentsUri = JsonPath.read(response, "$._links.comments.href");
-
-        result = mockMvc.perform(get(commentsUri)
-                .accept(MediaType.APPLICATION_JSON));
-
-        result.andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(jsonPath("$.text", is(text)));
     }
 }
