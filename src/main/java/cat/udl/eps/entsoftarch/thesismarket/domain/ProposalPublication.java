@@ -40,4 +40,8 @@ public class ProposalPublication extends Event {
     @OneToMany(mappedBy = "target")
     @JsonIgnore
     private Set<CoDirectorOffer> interestedCoDirectors = new HashSet<>();
+
+    public void setPublishes(ProposalSubmission publishes) {
+        this.publishes = publishes;
+    }
 }
