@@ -1,11 +1,13 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
-import cat.udl.eps.entsoftarch.thesismarket.domain.*;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
+import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalWithdrawalRepository;
 import com.jayway.jsonpath.JsonPath;
+import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -17,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationContextLoader;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -27,8 +28,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -38,7 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by http://rhizomik.net/~roberto/
  */
 @ContextConfiguration(classes = {ThesismarketApiApplication.class}, loader = SpringApplicationContextLoader.class)
-@DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 public class MyStepdefs {
@@ -50,7 +48,7 @@ public class MyStepdefs {
     @Autowired private WebApplicationContext wac;
     @Autowired private ProposalRepository proposalRepository;
     @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
-    @Autowired private ProposalPublicationRepository proposalPublicationRepository;
+    @Autowired private ProposalWithdrawalRepository proposalWithdrawalRepository;
 
     @Before
     public void setup() {
@@ -71,40 +69,7 @@ public class MyStepdefs {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         ProposalSubmission proposalSubmission = new ProposalSubmission();
         proposalSubmission.setSubmits(proposal);
-        proposal.setStatus(Proposal.Status.SUBMITTED);
-        proposalRepository.save(proposal);
         proposalSubmissionRepository.save(proposalSubmission);
-    }
-
-    @And("^there is an existing publication of the proposal titled \"([^\"]*)\"$")
-    public void thereIsAnExistingPublicationOfTheProposalTitled(String title) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalPublication proposalPublication = new ProposalPublication();
-        proposalPublication.setPublishes(proposalSubmission);
-        proposal.setStatus(Proposal.Status.PUBLISHED);
-        proposalRepository.save(proposal);
-        proposalPublicationRepository.save(proposalPublication);
-    }
-
-    @And("^the status of the proposal titled \"([^\"]*)\" is \"([^\"]*)\"$")
-    public void theStatusOfTheProposalTitledIs(String title, Proposal.Status status) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        assertThat(proposal.getStatus(), is(status));
-    }
-
-    @And("^there is not a publication of the submission of the proposal titled \"([^\"]*)\"$")
-    public void thereIsNotAPublicationOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        assertNull(proposalSubmission.getPublishedBy());
-    }
-
-    @And("^the status of the proposal titled \"([^\"]*)\" is set to \"([^\"]*)\"$")
-    public void theStatusOfTheProposalTitledIsSetTo(String title, Proposal.Status status) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        proposal.setStatus(status);
-        proposalRepository.save(proposal);
     }
 
     @When("^I submit the proposal with title \"([^\"]*)\"$")
@@ -129,32 +94,6 @@ public class MyStepdefs {
 
         String message = String.format(
                 "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
-
-        result = mockMvc.perform(post("/proposalWithdrawals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(message)
-                .accept(MediaType.APPLICATION_JSON));
-    }
-
-    @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
-    public void iCommentTheProposalWithTitleWithACommentWithText(String title, String text) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
-
-        String message = String.format(
-                "{ \"comments\" : \"proposalPublications/%s\", \"text\":\"%s\"}", proposalPublication.getId(), text);
-
-        result = mockMvc.perform(post("/comments")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(message)
-                .accept(MediaType.APPLICATION_JSON));
-    }
-
-    @When("^I withdraw an un-existing submission$")
-    public void iWithdrawAnUnexistingSubmission() throws Throwable {
-        String message = String.format(
-                "{ \"withdraws\": \"proposalSubmissions/%s\" }", 9999);
 
         result = mockMvc.perform(post("/proposalWithdrawals")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -211,18 +150,22 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$.title", is(title)));
     }
 
-    @Then("^I have created a comment that comments a proposal with text \"([^\"]*)\"$")
-    public void iHaveCreatedACommentThatCommentsAProposalWithText(String text) throws Throwable {
-
-        result.andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.text", is(text)));
+    @Given("^new proposal \"([^\"]*)\"$")
+    public void newProposal(String arg0) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
     }
 
-    @Then("^I get error (\\d+) with message \"([^\"]*)\"$")
-    public void iGetErrorWithMessage(int status, String message) throws Throwable {
-        result.andExpect(status().is(status))
-                .andExpect(jsonPath("$.message", is(message)));
+    @When("^I create the proposal with title \"([^\"]*)\"$")
+    public void iCreateTheProposalWithTitle(String arg0) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+
+    @Then("^new proposal with title \"([^\"]*)\"$")
+    public void newProposalWithTitle(String arg0) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
     }
 }
 
