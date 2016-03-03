@@ -8,7 +8,11 @@ import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionReposit
 import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalWithdrawalRepository;
 import com.jayway.jsonpath.JsonPath;
 import cucumber.api.PendingException;
 import cucumber.api.java.Before;
@@ -65,6 +69,8 @@ public class MyStepdefs {
 
     private String currentUsername;
     private String currentPassword;
+    @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
+    @Autowired private ProposalWithdrawalRepository proposalWithdrawalRepository;
 
     @Before
     public void setup() {
@@ -268,6 +274,36 @@ public class MyStepdefs {
         String response = result
                 .andDo(print())
                 .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String submitsUri = JsonPath.read(response, "$._links.submits.href");
+
+        result = mockMvc.perform(get(submitsUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(title)));
+    }
+
+    @Then("^I have created a withdrawal of the submission of the proposal titled \"([^\"]*)\"$")
+    public void iHaveCreatedAWithdrawalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
+
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String withdrawsUri = JsonPath.read(response, "$._links.withdraws.href");
+
+        result = mockMvc.perform(get(withdrawsUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
                 .andReturn().getResponse().getContentAsString();
 
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
