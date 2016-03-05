@@ -27,6 +27,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,16 +47,10 @@ public class MyStepdefs {
     private MockMvc mockMvc;
     private ResultActions result;
 
-    @Autowired
-    private WebApplicationContext wac;
-    @Autowired
-    private ProposalRepository proposalRepository;
-    @Autowired
-    private ProposalSubmissionRepository proposalSubmissionRepository;
-    @Autowired
-    private ProposalWithdrawalRepository proposalWithdrawalRepository;
-    @Autowired
-    private ProposalPublicationRepository proposalPublicationRepository;
+    @Autowired private WebApplicationContext wac;
+    @Autowired private ProposalRepository proposalRepository;
+    @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
+    @Autowired private ProposalPublicationRepository proposalPublicationRepository;
 
     @Before
     public void setup() {
@@ -80,13 +76,35 @@ public class MyStepdefs {
         proposalSubmissionRepository.save(proposalSubmission);
     }
 
-    @And("^there is an existing proposal publication of a submission of the proposal titled \"([^\"]*)\"$")
-    public void thereIsAnExistingProposalPublicationOfASubmissionOfTheProposalTitled(String title) throws Throwable {
+    @And("^there is an existing publication of the proposal titled \"([^\"]*)\"$")
+    public void thereIsAnExistingPublicationOfTheProposalTitled(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
         ProposalPublication proposalPublication = new ProposalPublication();
         proposalPublication.setPublishes(proposalSubmission);
+        proposal.setStatus(Proposal.Status.PUBLISHED);
+        proposalRepository.save(proposal);
         proposalPublicationRepository.save(proposalPublication);
+    }
+
+    @And("^the status of the proposal titled \"([^\"]*)\" is \"([^\"]*)\"$")
+    public void theStatusOfTheProposalTitledIs(String title, Proposal.Status status) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertThat(proposal.getStatus(), is(status));
+    }
+
+    @And("^there is not a publication of the submission of the proposal titled \"([^\"]*)\"$")
+    public void thereIsNotAPublicationOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        assertNull(proposalSubmission.getPublishedBy());
+    }
+
+    @And("^the status of the proposal titled \"([^\"]*)\" is set to \"([^\"]*)\"$")
+    public void theStatusOfTheProposalTitledIsSetTo(String title, Proposal.Status status) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        proposal.setStatus(status);
+        proposalRepository.save(proposal);
     }
 
     @When("^I submit the proposal with title \"([^\"]*)\"$")
@@ -128,6 +146,17 @@ public class MyStepdefs {
                 "{ \"comments\" : \"proposalPublications/%s\", \"text\":\"%s\"}", proposalPublication.getId(), text);
 
         result = mockMvc.perform(post("/comments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("^I withdraw an un-existing submission$")
+    public void iWithdrawAnUnexistingSubmission() throws Throwable {
+        String message = String.format(
+                "{ \"withdraws\": \"proposalSubmissions/%s\" }", 9999);
+
+        result = mockMvc.perform(post("/proposalWithdrawals")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
@@ -182,13 +211,18 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$.title", is(title)));
     }
 
-
     @Then("^I have created a comment that comments a proposal with text \"([^\"]*)\"$")
     public void iHaveCreatedACommentThatCommentsAProposalWithText(String text) throws Throwable {
 
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.text", is(text)));
+    }
+
+    @Then("^I get error (\\d+) with message \"([^\"]*)\"$")
+    public void iGetErrorWithMessage(int status, String message) throws Throwable {
+        result.andExpect(status().is(status))
+                .andExpect(jsonPath("$.message", is(message)));
     }
 }
 
