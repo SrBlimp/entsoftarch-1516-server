@@ -1,10 +1,15 @@
 package cat.udl.eps.entsoftarch.thesismarket.service;
 
+import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
 
@@ -16,10 +21,28 @@ import javax.transaction.Transactional;
 public class ProposalWithdrawalEventHandler {
     final Logger logger = LoggerFactory.getLogger(ProposalWithdrawalEventHandler.class);
 
+    @Autowired private ProposalRepository proposalRepository;
+
     @HandleBeforeCreate
     @Transactional
     public void handleProposalWithdrawalPreCreate(ProposalWithdrawal proposalWithdrawal){
         logger.info("Before creating: {}", proposalWithdrawal.toString());
+
+        ProposalSubmission submission = proposalWithdrawal.getWithdraws();
+        Assert.notNull(submission, "Trying to withdraw un-existing submission");
+
+        Proposal proposal = submission.getSubmits();
+        Assert.isTrue(proposal.getStatus().equals(Proposal.Status.SUBMITTED),
+                "Invalid proposal status '"+proposal.getStatus()+"', should be '"+ Proposal.Status.SUBMITTED+"'");
+        Assert.isNull(submission.getPublishedBy(),
+                "To withdraw a proposal submission it should be unpublished");
+
+        //TODO
+        //proposalWithdrawal.setAgent(currentUser);
+        //Assert.isTrue(proposal.getCreator().equals(proposalWithdrawal.getAgent()));
+
+        proposal.setStatus(Proposal.Status.DRAFT);
+        proposalRepository.save(proposal);
     }
 
     @HandleBeforeSave
