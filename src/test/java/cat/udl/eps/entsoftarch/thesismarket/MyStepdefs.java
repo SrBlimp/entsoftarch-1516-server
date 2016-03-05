@@ -75,6 +75,8 @@ public class MyStepdefs {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         ProposalSubmission proposalSubmission = new ProposalSubmission();
         proposalSubmission.setSubmits(proposal);
+        proposal.setStatus(Proposal.Status.SUBMITTED);
+        proposalRepository.save(proposal);
         proposalSubmissionRepository.save(proposalSubmission);
     }
 
