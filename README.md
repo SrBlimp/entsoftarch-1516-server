@@ -122,11 +122,11 @@ Facilitate **dissemination** of thesis project **defenses**
 digraph G {
    "" [shape=plaintext];
    "" -> "Draft" [label="create"];
-   "Draft" -> "Proposed" [label="submit"];
+   "Draft" -> "Submitted" [label="submit"];
    "Draft" -> "Draft" [label="edit"];
-   "Proposed" -> "Draft" [label="withdraw"];
-   "Proposed" -> "Published" [label="publish %28coordinator%29"];
-   "Proposed" -> "Draft" [label="reject %28coordinator%29"];
+   "Submitted" -> "Draft" [label="withdraw"];
+   "Submitted" -> "Published" [label="publish %28coordinator%29"];
+   "Submitted" -> "Draft" [label="reject %28coordinator%29"];
    "Published" -> "Published"  [label="comment"];
    "Published" -> "Published"  [label="offer as..."];
    "Published" -> "Published"  [label="assign"];

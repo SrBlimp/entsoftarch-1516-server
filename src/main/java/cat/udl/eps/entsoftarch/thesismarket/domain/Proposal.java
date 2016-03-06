@@ -15,11 +15,13 @@ public class Proposal {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    public enum Status { DRAFT, SUBMITTED, PUBLISHED, ASSIGNED, REGISTERED, DEPOSITED }
+
     @NotNull
     private String title;
     private String description;
     private String degree;
-    private String status;
+    private Status status =  Status.DRAFT;
     @ElementCollection
     private Set<String> topics = new HashSet<>();
     @ManyToOne
@@ -50,9 +52,9 @@ public class Proposal {
 
     public void setDegree(String degree) { this.degree = degree; }
 
-    public String getStatus() { return status; }
+    public Status getStatus() { return status; }
 
-    public void setStatus(String status) { this.status = status; }
+    public void setStatus(Status status) { this.status = status; }
 
     public Set<String> getTopics() { return topics; }
 
