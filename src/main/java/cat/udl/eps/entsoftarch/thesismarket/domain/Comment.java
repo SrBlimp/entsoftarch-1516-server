@@ -17,10 +17,26 @@ public class Comment {
 
     @NotBlank(message = "Comment text cannot be blank")
     @Size(max = 1024, message = "Comment maximum text length is {max} characters long")
-    String text;
+    private String text;
     @ManyToOne
-    User author;
+    private User author;
     @ManyToOne
     @NotNull
-    ProposalPublication comments;
+    private ProposalPublication comments;
+
+    public Long getId() { return id; }
+
+    public void setId(Long id) { this.id = id; }
+
+    public String getText() { return text; }
+
+    public void setText(String text) { this.text = text; }
+
+    public User getAuthor() { return author; }
+
+    public void setAuthor(User author) { this.author = author; }
+
+    public ProposalPublication getComments() { return comments; }
+
+    public void setComments(ProposalPublication comments) { this.comments = comments; }
 }
