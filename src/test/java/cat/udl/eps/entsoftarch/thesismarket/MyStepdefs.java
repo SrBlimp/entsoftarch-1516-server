@@ -514,5 +514,11 @@ public class MyStepdefs {
 
         throw new PendingException();
     }
+
+    @Then("^I have edited the \"([^\"]*)\" that \"([^\"]*)\" the \"([^\"]*)\" with \"([^\"]*)\" \"([^\"]*)\"$")
+    public void iHaveEditedTheThatTheWith(String arg0, String arg1, String arg2, String arg3, String arg4) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
 }
 
