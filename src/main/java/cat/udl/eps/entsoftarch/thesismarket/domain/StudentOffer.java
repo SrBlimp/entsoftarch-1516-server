@@ -14,12 +14,36 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class StudentOffer extends Offer {
     @ManyToOne
-    Student agent;
+    private Student agent;
     @OneToOne
     @NotNull
-    ProposalPublication target;
+    private ProposalPublication target;
     @OneToOne
     @JsonIgnore
+    private StudentsAssignment assignedBy;
+
+    public Student getAgent() {
+        return agent;
+    }
+
+    public void setAgent(Student agent) {
+        this.agent = agent;
+    }
+
+    public ProposalPublication getTarget() {
+        return target;
+    }
+
+    public void setTarget(ProposalPublication target) {
+        this.target = target;
+    }
+
     @Nullable
-    StudentsAssignment assignedBy;
+    public StudentsAssignment getAssignedBy() {
+        return assignedBy;
+    }
+
+    public void setAssignedBy(@Nullable StudentsAssignment assignedBy) {
+        this.assignedBy = assignedBy;
+    }
 }
