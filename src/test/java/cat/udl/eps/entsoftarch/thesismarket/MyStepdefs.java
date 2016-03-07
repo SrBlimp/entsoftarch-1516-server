@@ -223,6 +223,22 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
+    @When("^I publish the proposal with title \"([^\"]*)\"$")
+    public void iPublishTheProposalWithTitle(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = new ProposalPublication();
+        proposalPublication.setPublishes(proposalSubmission);
+
+        String message = String.format(
+                "{ \"publish\": \"proposalPublication/%s\" }",  proposalSubmission.getId());
+
+        result = mockMvc.perform(post("/proposalPublication")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
     @When("^I withdraw the submission of the proposal titled \"([^\"]*)\"$")
     public void iWithdrawTheSubmissionOfTheProposalTitled(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
