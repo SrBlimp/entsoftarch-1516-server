@@ -231,9 +231,9 @@ public class MyStepdefs {
         proposalPublication.setPublishes(proposalSubmission);
 
         String message = String.format(
-                "{ \"publish\": \"proposalPublication/%s\" }",  proposalSubmission.getId());
+                "{ \"publishes\": \"proposalSubmissions/%s\" }",  proposalSubmission.getId());
 
-        result = mockMvc.perform(post("/proposalPublication")
+        result = mockMvc.perform(post("/proposalPublications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
