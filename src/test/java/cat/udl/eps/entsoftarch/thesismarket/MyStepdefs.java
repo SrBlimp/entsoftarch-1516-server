@@ -404,7 +404,9 @@ public class MyStepdefs {
     @When("^I edit the proposal title with \"([^\"]*)\"$")
     public void iEditTheProposalTitleWith(String arg0) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
-        //Cal feru!
+        //Cal feru i implementar el test!
+        Proposal proposal = new Proposal();
+
         throw new PendingException();
     }
 
