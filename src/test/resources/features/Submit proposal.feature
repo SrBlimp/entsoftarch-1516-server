@@ -8,7 +8,7 @@ Feature: Submit proposal
     When I submit the proposal with title "Really interesting project"
     Then I have created a proposal submission that submits a proposal with title "Really interesting project"
 
-  Scenario: Submit non existing proposal
+  Scenario: Submit unexisting proposal
     Given there is an existing proposal with title "Really interesting project"
-    When I submit the proposal with title "Really interesting project"
-    Then I receive a 404 Not found error
+    When I submit an unexisting proposal
+    Then I get error 500 with message "Trying to submit un-existing proposal"

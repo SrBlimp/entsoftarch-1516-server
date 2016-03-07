@@ -66,7 +66,6 @@ public class MyStepdefs {
 
     @Autowired private WebApplicationContext wac;
     @Autowired private ProposalRepository proposalRepository;
-    @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
     @Autowired private ProposalPublicationRepository proposalPublicationRepository;
     @Autowired private ProponentRepository proponentRepository;
 
@@ -108,16 +107,6 @@ public class MyStepdefs {
         Proposal proposal = new Proposal();
         proposal.setTitle(title);
         proposalRepository.save(proposal);
-    }
-
-    @And("^there is an existing submission of the proposal titled \"([^\"]*)\"$")
-    public void thereIsAnExistingSubmissionOfTheProposalTitled(String title) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = new ProposalSubmission();
-        proposalSubmission.setSubmits(proposal);
-        proposal.setStatus(Proposal.Status.SUBMITTED);
-        proposalRepository.save(proposal);
-        proposalSubmissionRepository.save(proposalSubmission);
     }
 
     @And("^there is an existing publication of the proposal titled \"([^\"]*)\"$")
@@ -359,35 +348,6 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$.title", is(title)));
     }
 
-    @Then("^I have created a withdrawal of the submission of the proposal titled \"([^\"]*)\"$")
-    public void iHaveCreatedAWithdrawalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
-
-        String response = result
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-
-        String withdrawsUri = JsonPath.read(response, "$._links.withdraws.href");
-
-        result = mockMvc.perform(get(withdrawsUri)
-                .accept(MediaType.APPLICATION_JSON));
-
-        response = result
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andReturn().getResponse().getContentAsString();
-
-        String submitsUri = JsonPath.read(response, "$._links.submits.href");
-
-        result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
-
-        result.andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(jsonPath("$.title", is(title)));
-    }
 
     @Then("^I have created a withdrawal of the submission of the proposal titled \"([^\"]*)\"$")
     public void iHaveCreatedAWithdrawalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
@@ -552,6 +512,18 @@ public class MyStepdefs {
                 "{ \"target\": \"proposalPublications/%s\" }", 9999);
 
         result = mockMvc.perform(post("/studentOffers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+
+    @When("^I submit an unexisting proposal$")
+    public void iSubmitAnUnexistingProposal() throws Throwable {
+        String message = String.format(
+                "{ \"submits\": \"proposals/%s\" }", 9999);
+
+        result = mockMvc.perform(post("/proposalSubmissions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
