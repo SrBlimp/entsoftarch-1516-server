@@ -506,9 +506,10 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
     }
 
-    @Then("^I have edited the \"([^\"]*)\" that \"([^\"]*)\" the \"([^\"]*)\" with \"([^\"]*)\" \"([^\"]*)\"$")
-    public void iHaveEditedTheThatTheWith(String arg0, String arg1, String arg2, String arg3, String arg4) throws Throwable {
+    @When("^I edit the proposal title with \"([^\"]*)\"$")
+    public void iEditTheProposalTitleWith(String arg0) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
+        //Cal feru!
         throw new PendingException();
     }
 }
