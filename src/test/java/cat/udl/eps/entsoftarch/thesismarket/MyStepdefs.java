@@ -12,6 +12,8 @@ import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalWithdrawalRepository;
@@ -139,6 +141,7 @@ public class MyStepdefs {
         proposal.setStatus(status);
         proposalRepository.save(proposal);
     }
+
 
     @And("^there is an existing submission of the proposal titled \"([^\"]*)\"$")
     public void thereIsAnExistingSubmissionOfTheProposalTitled(String title) throws Throwable {
@@ -347,6 +350,14 @@ public class MyStepdefs {
                 .andDo(print())
                 .andExpect(jsonPath("$.title", is(title)));
     }
+
+
+    @Then("^I receive a (\\d+) Not found error$")
+    public void iReceiveANotFoundError(int error) throws Throwable {
+        result.andExpect(status().is4xxClientError())
+                .andExpect(status().is(error));
+    }
+
 
 
     @Then("^I have created a withdrawal of the submission of the proposal titled \"([^\"]*)\"$")
