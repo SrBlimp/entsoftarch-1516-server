@@ -210,6 +210,14 @@ public class MyStepdefs {
         proposalSubmissionRepository.save(proposalSubmission);
     }
 
+    @And("^there is an existing submission of the proposal titled \"([^\"]*)\"$")
+    public void thereIsAnExistingSubmissionOfTheProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = new ProposalSubmission();
+        proposalSubmission.setSubmits(proposal);
+        proposalSubmissionRepository.save(proposalSubmission);
+    }
+
     @When("^I submit the proposal with title \"([^\"]*)\"$")
     public void iSubmitTheProposalWithTitle(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
