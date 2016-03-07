@@ -21,7 +21,7 @@ public class ProposalPublication extends Event {
     private ProposalSubmission publishes;
     @OneToMany(mappedBy = "comments")
     private Set<Comment> commentedBy = new HashSet<>();
-    @OneToOne(mappedBy = "rejects")
+    /*@OneToOne(mappedBy = "rejects")
     private ProjectRejection rejectedBy;
     @OneToOne(mappedBy = "registers")
     private ProposalRegistration registeredBy;
@@ -31,7 +31,7 @@ public class ProposalPublication extends Event {
     private Set<DirectorOffer> interestedDirectors = new HashSet<>();
     @OneToMany(mappedBy = "target")
     private Set<CoDirectorOffer> interestedCoDirectors = new HashSet<>();
-
+*/
     public Coordinator getAgent() { return agent; }
 
     public void setAgent(Coordinator agent) { this.agent = agent; }
@@ -43,7 +43,7 @@ public class ProposalPublication extends Event {
     public Set<Comment> getCommentedBy() { return commentedBy; }
 
     public void setCommentedBy(Set<Comment> commentedBy) { this.commentedBy = commentedBy; }
-
+/*
     @Nullable
     public ProjectRejection getRejectedBy() { return rejectedBy; }
 
@@ -65,4 +65,5 @@ public class ProposalPublication extends Event {
     public Set<CoDirectorOffer> getInterestedCoDirectors() { return interestedCoDirectors; }
 
     public void setInterestedCoDirectors(Set<CoDirectorOffer> interestedCoDirectors) { this.interestedCoDirectors = interestedCoDirectors; }
+    */
 }

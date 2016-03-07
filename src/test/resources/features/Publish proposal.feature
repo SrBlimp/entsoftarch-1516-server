@@ -7,4 +7,5 @@ Feature: Publish proposal
     Given there is an existing proposal with title "Publish existing proposal submission"
     And there is an existing submission of the proposal titled "Publish existing proposal submission"
     When I publish the proposal with title "Publish existing proposal submission"
+    Then I have a proposal publication with title "Publish existing proposal submission"
 

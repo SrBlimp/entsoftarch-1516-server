@@ -159,9 +159,9 @@ public class MyStepdefs {
         proposalPublication.setPublishes(proposalSubmission);
 
         String message = String.format(
-                "{ \"publish\": \"proposalPublication/%s\" }",  proposalSubmission.getId());
+                "{ \"publishes\": \"proposalSubmissions/%s\" }",  proposalSubmission.getId());
 
-        result = mockMvc.perform(post("/proposalPublication")
+        result = mockMvc.perform(post("/proposalPublications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
@@ -306,7 +306,18 @@ public class MyStepdefs {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        String submitsUri = JsonPath.read(response, "$._links.publish.href");
+        String publishesUri = JsonPath.read(response, "$._links.publishes.href");
+
+        result = mockMvc.perform(get(publishesUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
                 .accept(MediaType.APPLICATION_JSON));
