@@ -151,6 +151,22 @@ public class MyStepdefs {
                 .accept(MediaType.APPLICATION_JSON));
     }
 
+    @When("^I publish the proposal with title \"([^\"]*)\"$")
+    public void iPublishTheProposalWithTitle(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = new ProposalPublication();
+        proposalPublication.setPublishes(proposalSubmission);
+
+        String message = String.format(
+                "{ \"publish\": \"proposalPublication/%s\" }",  proposalSubmission.getId());
+
+        result = mockMvc.perform(post("/proposalPublication")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
     @When("^I withdraw the submission of the proposal titled \"([^\"]*)\"$")
     public void iWithdrawTheSubmissionOfTheProposalTitled(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -280,6 +296,25 @@ public class MyStepdefs {
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.text", is(text)));
+    }
+
+    @Then("^I have a proposal publication with title \"([^\"]*)\"$")
+    public void iHaveAProposalPublicationWithTitle(String title) throws Throwable {
+
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String submitsUri = JsonPath.read(response, "$._links.publish.href");
+
+        result = mockMvc.perform(get(submitsUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(title)));
     }
 
     @Then("^I get error (\\d+) with message \"([^\"]*)\"$")
