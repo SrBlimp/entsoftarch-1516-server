@@ -12,4 +12,16 @@ Feature: Submit proposal
   Scenario: Submit unexisting proposal
     Given there is an existing proposal with title "Really interesting project"
     When I submit an unexisting proposal
-    Then I get error 500 with message "Trying to submit un-existing proposal"
+    Then I get error 500 with message "Trying to submit unexisting proposal"
+
+  Scenario: Submit a submitted proposal
+    Given there is an existing proposal with title "Really interesting project"
+    And the status of the proposal titled "Really interesting project" is set to "SUBMITTED"
+    When I submit the proposal with title "Really interesting project"
+    Then I get error 500 with message "Invalid proposal status 'SUBMITTED', should be 'DRAFT'"
+
+  Scenario: Submit a proposal already published
+    Given there is an existing proposal with title "Really interesting project"
+    And the status of the proposal titled "Really interesting project" is set to "PUBLISHED"
+    When I submit the proposal with title "Really interesting project"
+    Then I get error 500 with message "Invalid proposal status 'PUBLISHED', should be 'DRAFT'"
