@@ -455,6 +455,36 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$.text", is(text)));
     }
 
+    @Then("^I assign the proposal with title \"([^\"]*)\" to student with name \"([^\"]*)\"$"   )
+    public void iAssignTheProposalWithTitleToStudentWithName (String title, String name) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+        Student student = new Student();
+        student.setName(name);
+        proposalPublication.setStudent(student);
+    }
+
+    @Then("^I assign the proposal with title \"([^\"]*)\" to director with name \"([^\"]*)\"$"   )
+    public void iAssignTheProposalWithTitleToDirectorWithName (String title, String name) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+        DirectorOffer director = new DirectorOffer();
+        director.setName(name);
+        proposalPublication.setDirector(director);
+    }
+
+    @Then("^I assign the proposal with title \"([^\"]*)\" to codirector with name \"([^\"]*)\"$"   )
+    public void iAssignTheProposalWithTitleToCoDirectorWithName (String title, String name) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+        CoDirectorOffer codirector = new CoDirectorOffer();
+        codirector.setName(name);
+        proposalPublication.setCoDirector(codirector);
+    }
+
     @Then("^I have a proposal publication with title \"([^\"]*)\"$")
     public void iHaveAProposalPublicationWithTitle(String title) throws Throwable {
 
