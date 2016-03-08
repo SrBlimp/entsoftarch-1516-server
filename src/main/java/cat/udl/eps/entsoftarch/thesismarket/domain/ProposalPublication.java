@@ -16,6 +16,12 @@ import java.util.Set;
 public class ProposalPublication extends Event {
     @ManyToOne
     private Coordinator agent;
+    @ManyToOne
+    private Student student;
+    @ManyToOne
+    private DirectorOffer director;
+    @ManyToOne
+    private CoDirectorOffer coDirector;
     @OneToOne
     @NotNull
     private ProposalSubmission publishes;
@@ -43,7 +49,20 @@ public class ProposalPublication extends Event {
     public Set<Comment> getCommentedBy() { return commentedBy; }
 
     public void setCommentedBy(Set<Comment> commentedBy) { this.commentedBy = commentedBy; }
-/*
+
+    public Student getStudent() { return student; }
+
+    public void setStudent(Student student) { this.student = student; }
+
+    public DirectorOffer getDirector() {return director; }
+
+    public void setDirector(DirectorOffer director) {this.director = director; }
+
+    public CoDirectorOffer getCoDirector() { return coDirector; }
+
+    public void setCoDirector(CoDirectorOffer coDirector) {this.coDirector = coDirector; }
+
+    /*
     @Nullable
     public ProjectRejection getRejectedBy() { return rejectedBy; }
 
