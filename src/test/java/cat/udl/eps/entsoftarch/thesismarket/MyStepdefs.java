@@ -150,22 +150,40 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$.title", is(title)));
     }
 
-    @Given("^new proposal \"([^\"]*)\"$")
-    public void newProposal(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
 
     @When("^I create the proposal with title \"([^\"]*)\"$")
-    public void iCreateTheProposalWithTitle(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    public void iCreateTheProposalWithTitle(String title) throws Throwable {
+        String message = String.format(
+                "{ \"title\": \"%s\" }", title);
+
+        result = mockMvc.perform(post("/proposals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
     }
 
     @Then("^new proposal with title \"([^\"]*)\"$")
-    public void newProposalWithTitle(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    public void newProposalWithTitle(String title) throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String proposalsUri = JsonPath.read(response, "$._links.proposals.href");
+
+        result = mockMvc.perform(get(proposalsUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(title)));
+    }
+
+    @Then("^I get error (\\d+) with message \"([^\"]*)\"$")
+    public void iGetErrorWithMessage(int code, String message) throws Throwable {
+        result.andExpect(status().is(code))
+                .andExpect(jsonPath("$.message", is(message)));
     }
 }
 

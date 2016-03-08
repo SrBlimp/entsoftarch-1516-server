@@ -12,4 +12,4 @@ Feature: Create proposal
   Scenario: Create proposal and already created with title is "Proposal"
     Given there is an existing proposal with title "Proposal"
     When I create the proposal with title "Proposal"
-    Then I get error 500 with message " There is already a proposal with this title "
+    Then I get error 500 with message "Trying to create a proposal already created."
