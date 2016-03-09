@@ -3,18 +3,26 @@ Feature: Publish proposal
   As a coordinator
   I want review and make public the proposal
 
-  Scenario: Publish proposal
-    Given there is an existing proposal with title "Publish existing proposal submission"
-    And there is an existing submission of the proposal titled "Publish existing proposal submission"
-    When I publish the proposal with title "Publish existing proposal submission"
-    Then I have a proposal publication with title "Publish existing proposal submission"
+  Scenario: Publish a draft proposal
+    Given there is an existing proposal with title "Publish a draft proposal"
+    When I publish the proposal with title "Publish a draft proposal"
+    Then I get error 500 with message "The proposal not has the state submitted"
+    
+  Scenario: Publish a submitted proposal
+    Given there is an existing proposal with title "Publish a submitted proposal"
+    And there is an existing submission of the proposal titled "Publish a submitted proposal"
+    When I publish the proposal with title "Publish a submitted proposal"
+    Then I have a proposal publication with title "Publish a submitted proposal"
 
-  Scenario: Publish a proposal published 
-    Given there is an existing proposal with title "Publish a proposal published" 
-    And there is an existing submission of the proposal titled "Publish a proposal published"
-    And there is an existing publication of the proposal titled "Publish a proposal published" 
-    When I publish the proposal with title "Publish a proposal published" 
-    Then I get error 500 with message "The proposal is already published"
+  Scenario: Publish a published proposal
+    Given there is an existing proposal with title "Publish a published proposal"
+    And there is an existing submission of the proposal titled "Publish a published proposal"
+    And there is an existing publication of the proposal titled "Publish a published proposal"
+    When I publish the proposal with title "Publish a published proposal"
+    Then I get error 500 with message "The proposal not has the state submitted"
+
+
+
 
   Scenario: Assign to student a publish proposal
     Given there is an existing proposal with title "Publish a proposal published"
@@ -44,7 +52,6 @@ Feature: Publish proposal
     When I withdraw the submission of the proposal titled "Draft a proposal published"
     Then I get error 500 with message "Invalid proposal status 'DRAFT', should be 'SUBMITTED'"
     And the status of the proposal titled "Draft a proposal published" is "DRAFT"
-
 
   Scenario: Comment publish proposal
     Given there is an existing proposal with title "Publish a proposal published"

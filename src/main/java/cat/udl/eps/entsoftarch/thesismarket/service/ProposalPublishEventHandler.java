@@ -25,6 +25,6 @@ public class ProposalPublishEventHandler {
         logger.info("Before creating: {}", proposalPublication.toString());
 
         Proposal proposal = proposalPublication.getPublishes().getSubmits();
-        Assert.isTrue(proposal.getStatus().equals(Proposal.Status.SUBMITTED), "The proposal is already published");
+        Assert.isTrue(proposal.getStatus().equals(Proposal.Status.SUBMITTED), "The proposal not has the state submitted");
     }
 }
