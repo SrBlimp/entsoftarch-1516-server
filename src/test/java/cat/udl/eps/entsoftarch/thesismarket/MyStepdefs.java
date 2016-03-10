@@ -538,6 +538,7 @@ public class MyStepdefs {
 
     @When("^I edit the proposal with title \"([^\"]*)\" title with \"([^\"]*)\"$")
     public void iEditTheProposalWithTitleTitleWith(String title, String newTitle) throws Throwable {
+        //NOT SHURE
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         proposal.setTitle(newTitle);
         proposalRepository.save(proposal);
