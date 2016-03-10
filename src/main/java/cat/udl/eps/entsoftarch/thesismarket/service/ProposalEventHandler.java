@@ -25,7 +25,7 @@ public class ProposalEventHandler {
 
     @HandleBeforeCreate
     @Transactional
-    public void handleProposalWithdrawalCreate(Proposal new_proposal){
+    public void handleProposalCreate(Proposal new_proposal){
         logger.info("Before creating: {}", new_proposal.toString());
 
         Proposal proposal = proposalRepository.findByTitle(new_proposal.getTitle());

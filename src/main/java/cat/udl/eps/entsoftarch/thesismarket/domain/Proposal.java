@@ -1,5 +1,7 @@
 package cat.udl.eps.entsoftarch.thesismarket.domain;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,7 +19,7 @@ public class Proposal {
 
     public enum Status { DRAFT, SUBMITTED, PUBLISHED, ASSIGNED, REGISTERED, DEPOSITED }
 
-    @NotNull
+    @NotBlank(message = "Title can't be blank")
     private String title;
     private String description;
     private String degree;

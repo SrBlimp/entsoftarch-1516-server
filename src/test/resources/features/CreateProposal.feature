@@ -13,3 +13,7 @@ Feature: Create proposal
     Given there is an existing proposal with title "Proposal"
     When I create the proposal with title "Proposal"
     Then I get error 500 with message "Trying to create a proposal already created."
+
+   Scenario: Create proposal and check description is not null
+     When I create the proposal with title ""
+     Then I get error 500 with message "Title can't be blank"
