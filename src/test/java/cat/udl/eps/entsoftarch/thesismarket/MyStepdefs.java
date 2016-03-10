@@ -164,17 +164,7 @@ public class MyStepdefs {
 
     @Then("^new proposal with title \"([^\"]*)\"$")
     public void newProposalWithTitle(String title) throws Throwable {
-        String response = result
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-
-        String proposalsUri = JsonPath.read(response, "$._links.proposals.href");
-
-        result = mockMvc.perform(get(proposalsUri)
-                .accept(MediaType.APPLICATION_JSON));
-
-        result.andExpect(status().isOk())
+        result.andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.title", is(title)));
