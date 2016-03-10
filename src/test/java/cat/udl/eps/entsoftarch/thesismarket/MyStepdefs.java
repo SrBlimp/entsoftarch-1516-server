@@ -580,5 +580,24 @@ public class MyStepdefs {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
+
+    @Then("^I have an error$")
+    public void iHaveAnError() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+
+    @When("^I edit the proposal title with \"([^\"]*)\"$")
+    public void iEdItTheProposalTitleWith(String newTitle) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+
+    @When("^I edit the proposal with title \"([^\"]*)\" title with \"([^\"]*)\"$")
+    public void iEditTheProposalWithTitleTitleWith(String title, String newTitle) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        proposal.setTitle(newTitle);
+        proposalRepository.save(proposal);
+    }
 }
 
