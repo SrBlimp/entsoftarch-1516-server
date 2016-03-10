@@ -7,3 +7,8 @@ Feature: Edit proposal
     Given there is an existing proposal with title "Really interesting project"
     When I edit the proposal title with "Not interesting project"
     Then I have edited the "proposalSubmission" that "edits" the "proposal" with "title" "Not interesting project"
+
+  Scenario: Edit existing proposal with new title null
+    Given there is an existing proposal with title "Really interesting project"
+    When I edit the proposal title with ""
+    Then I have an error
