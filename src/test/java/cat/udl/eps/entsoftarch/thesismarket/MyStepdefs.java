@@ -59,6 +59,7 @@ public class MyStepdefs {
     @Autowired private ProposalRepository proposalRepository;
     @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
     @Autowired private ProposalPublicationRepository proposalPublicationRepository;
+    @Autowired private UserRepository userRepository;
     @Autowired private ProponentRepository proponentRepository;
     @Autowired private StudentRepository studentRepository;
     @Autowired private JavaMailSender javaMailSender;
@@ -99,6 +100,14 @@ public class MyStepdefs {
         Proposal proposal = new Proposal();
         proposal.setTitle(title);
         proposalRepository.save(proposal);
+    }
+
+    @Given("^there is an existing student with id \"([^\"]*)\"$")
+    public void thereIsAnExistingUserWithId(Long id) throws Throwable {
+        User user = new User();
+        user.setId(id);
+        //Falta implementar save a la classe UserRepository
+        userRepository.save(user);
     }
 
     @And("^there is an existing submission of the proposal titled \"([^\"]*)\"$")
@@ -216,6 +225,26 @@ public class MyStepdefs {
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
+                .accept(MediaType.APPLICATION_JSON));
+
+    }
+
+    @When("^I assign a existing user to the published proposal titled \"([^\"]*)\"$")
+    public void iAssignExistingUsertoProposalTitled(String title) throws Throwable {
+        /*
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalWithdrawal proposalWithdrawal = new ProposalWithdrawal();
+        proposalWithdrawal.setWithdraws(proposalSubmission);
+
+        String message = String.format(
+                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
+
+        result = mockMvc.perform(post("/proposalWithdrawals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+        */
     }
 
     @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
