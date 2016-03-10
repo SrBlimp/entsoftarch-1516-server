@@ -12,3 +12,8 @@ Feature: Edit proposal
     Given there is an existing proposal with title "Really interesting project"
     When I edit the proposal title with ""
     Then I have an error
+
+  Scenario: Edit non-existent proposal
+    Given there is not proposal
+    When I try edit a proposal
+    Then I have an error
