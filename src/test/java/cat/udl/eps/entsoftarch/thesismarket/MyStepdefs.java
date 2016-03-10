@@ -50,10 +50,14 @@ public class MyStepdefs {
     private MockMvc mockMvc;
     private ResultActions result;
 
-    @Autowired private WebApplicationContext wac;
-    @Autowired private ProposalRepository proposalRepository;
-    @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
-    @Autowired private ProposalPublicationRepository proposalPublicationRepository;
+    @Autowired
+    private WebApplicationContext wac;
+    @Autowired
+    private ProposalRepository proposalRepository;
+    @Autowired
+    private ProposalSubmissionRepository proposalSubmissionRepository;
+    @Autowired
+    private ProposalPublicationRepository proposalPublicationRepository;
 
     @Before
     public void setup() {
@@ -134,6 +138,21 @@ public class MyStepdefs {
                 "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
 
         result = mockMvc.perform(post("/proposalWithdrawals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("^I comment the proposal publication of the proposal titled \"([^\"]*)\"$")
+    public void iCommentTheProposalPublicationOfTheProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalSubmission.getPublishedBy();
+
+        String message = String.format(
+                "{ \"comments\": \"proposalPublications/%s\" }", proposalPublication.getId());
+
+        result = mockMvc.perform(post("/comments")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
