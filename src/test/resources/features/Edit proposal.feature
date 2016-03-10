@@ -11,9 +11,9 @@ Feature: Edit proposal
   Scenario: Edit existing proposal with new title null
     Given there is an existing proposal with title "Really interesting project"
     When I edit the proposal title with ""
-    Then I have an error
+    Then I have an error and the title is "Really interesting project"
 
   Scenario: Edit non-existent proposal
     Given there is not proposal
-    When I try edit a proposal
+    When I try edit this proposal
     Then I have an error
