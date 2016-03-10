@@ -225,6 +225,29 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
+    ////////////////////////////////////////////////////
+    //@@
+    @When("I offer as student to a publication proposal with title \"([^\"]*)\" ")
+    public void iOfferAsStudentToAPublicationProposal() throws Throwable {
+
+    }
+
+
+    @Then("I have created an offer student of the publication proposal of the submission of the proposal titled \"([^\"]*)\" ")
+    public void iHaveCreatedAnOfferStudentOfThePublicationProposalOfTheSubmissionOfTheProposalWithTitle(String title) throws Throwable{
+
+    }
+    //@@
+
+    //@@
+    @And("Student \"([^\"]*)\" has offered for proposal with title \"([^\"]*)\" ")
+    public void StudentHasOfferedForProposalWithTitle(String student, String title) throws Throwable{
+
+    }
+
+    //@@
+
+    ////////////////////////////////////////////////////
     @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")
     public void iHaveCreatedAProposalSubmissionThatSubmitsAProposalWithTitle(String title) throws Throwable {
 

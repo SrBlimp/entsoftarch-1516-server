@@ -1,5 +1,7 @@
 package cat.udl.eps.entsoftarch.thesismarket.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
