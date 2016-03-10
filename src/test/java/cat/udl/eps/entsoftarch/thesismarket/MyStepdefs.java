@@ -12,8 +12,6 @@ import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalWithdrawalRepository;

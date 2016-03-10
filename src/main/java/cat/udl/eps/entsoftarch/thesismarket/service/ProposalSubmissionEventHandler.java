@@ -30,12 +30,11 @@ public class ProposalSubmissionEventHandler {
 
         logger.info("Before creating: {}", proposalSubmission.toString());
 
+        Assert.notNull(proposalSubmission.getSubmits(), "Submits mustn't be null");
         Proposal submits = proposalSubmission.getSubmits();
-        Assert.notNull(submits, "Trying to submit unexisting submission");
 
         Assert.isTrue(submits.getStatus().equals(Proposal.Status.DRAFT),
                 "Invalid proposal status '"+submits.getStatus()+"', should be '"+ Proposal.Status.DRAFT+"'");
-
 
         //proposalSubmission.setAgent(currentuser)
         //Assert.isTrue(submits.getCreator().equals(submits.getCreator()));
