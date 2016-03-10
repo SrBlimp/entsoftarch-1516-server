@@ -1,14 +1,15 @@
-Feature: Withdraw proposal
-  In order to withdraw a submitted proposal not yet published
-  As a proponent
-  I want to create a proposal withdrawal
+Feature: Assign student to a proposal
+  In order to assign a student to a published proposal
+  As a coordinator
+  I want to assign a proposal to a student
 
-  Scenario: Withdraw existing proposal submission not yet published
+  Scenario: Assign existing proposal submission to an existing user
     Given there is an existing proposal with title "Really interesting project"
       And there is an existing submission of the proposal titled "Really interesting project"
-      And the status of the proposal titled "Really interesting project" is "SUBMITTED"
-      And there is not a publication of the submission of the proposal titled "Really interesting project"
-    When I withdraw the submission of the proposal titled "Really interesting project"
+      And there is an existing publication of the proposal titled "Really interesting project"
+      And the status of the proposal titled "Really interesting project" is "PUBLISHED"
+      And there is an existing user with id "123"
+    When I assign a existing user to the published proposal titled "Really interesting project"
     Then I have created a withdrawal of the submission of the proposal titled "Really interesting project"
       And the status of the proposal titled "Really interesting project" is "DRAFT"
 
