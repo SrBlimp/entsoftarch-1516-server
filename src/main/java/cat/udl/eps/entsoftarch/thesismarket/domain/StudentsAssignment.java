@@ -14,4 +14,13 @@ public class StudentsAssignment extends Assignment {
     @OneToMany
     @Size(min = 1, max = 2, message = "Minimum {min} student per proposal and maximum {max} students")
     private Set<StudentOffer> assigns = new HashSet<>();
+
+    public Set<StudentOffer> getAssigns() {
+        return assigns;
+    }
+
+    public void setAssigns(Set<StudentOffer> assigns) {
+        this.assigns = assigns;
+    }
+
 }
