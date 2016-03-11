@@ -12,8 +12,19 @@ import java.util.Collection;
 @Entity
 public class Professor extends Proponent {
 
+    private boolean isCoordinator = false;
+
+    public boolean isCoordinator() { return isCoordinator; }
+
+    public void setCoordinator(boolean coordinator) { isCoordinator = coordinator; }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_PROFESSOR, ROLE_PROPONENT");
+        if (isCoordinator)
+            return AuthorityUtils.commaSeparatedStringToAuthorityList(
+                    "ROLE_PROFESSOR, ROLE_PROPONENT, ROLE_COORDINATOR");
+        else
+            return AuthorityUtils.commaSeparatedStringToAuthorityList(
+                    "ROLE_PROFESSOR, ROLE_PROPONENT");
     }
 }
