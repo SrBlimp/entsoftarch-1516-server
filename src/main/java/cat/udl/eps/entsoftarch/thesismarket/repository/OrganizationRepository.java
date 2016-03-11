@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @RepositoryRestResource
-public interface OrganizationRepository extends PagingAndSortingRepository<Organization, Long> {
+public interface OrganizationRepository extends PagingAndSortingRepository<Organization, String> {
 }
