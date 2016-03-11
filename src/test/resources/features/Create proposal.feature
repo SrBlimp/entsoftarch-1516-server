@@ -4,7 +4,6 @@ Feature: Create proposal
   In order to create a proposal
   I want to check the correct creation
 
-
   Scenario: Create proposal
     When I create the proposal with title "Create new proposal"
     Then new proposal with title "Create new proposal"
@@ -14,6 +13,6 @@ Feature: Create proposal
     When I create the proposal with title "Proposal"
     Then I get error 500 with message "Trying to create a proposal already created."
 
-   Scenario: Create proposal and check description is not null
-     When I create the proposal with title ""
-     Then I get error 500 with message "Title can't be blank"
+  Scenario: Create proposal and check title is not blank
+    When I create the proposal with title ""
+    Then I get error 400 with message "Title cannot be blank"
