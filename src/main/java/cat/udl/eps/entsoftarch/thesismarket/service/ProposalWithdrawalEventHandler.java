@@ -29,7 +29,6 @@ public class ProposalWithdrawalEventHandler {
         logger.info("Before creating: {}", proposalWithdrawal.toString());
 
         ProposalSubmission submission = proposalWithdrawal.getWithdraws();
-        Assert.notNull(submission, "Trying to withdraw un-existing submission");
 
         Proposal proposal = submission.getSubmits();
         Assert.isTrue(proposal.getStatus().equals(Proposal.Status.SUBMITTED),
