@@ -57,24 +57,13 @@ Feature: Assign student to a proposal
     Then I get error 500 with message "A proposal submission it should be unpublished"
 
 
-
-
-
-
-  Scenario: Withdraw submitted proposal but wrong status "DRAFT"
+  Scenario: Assign existing proposal submission to an existing user when the team is full
     Given there is an existing proposal with title "Really interesting project"
-      And there is an existing submission of the proposal titled "Really interesting project"
-      And the status of the proposal titled "Really interesting project" is set to "DRAFT"
-    When I withdraw the submission of the proposal titled "Really interesting project"
-    Then I get error 500 with message "Invalid proposal status 'DRAFT', should be 'SUBMITTED'"
-      And the status of the proposal titled "Really interesting project" is "DRAFT"
-
-  Scenario: Withdraw proposal submission already published
-    Given there is an existing proposal with title "Really interesting project"
-      And there is an existing submission of the proposal titled "Really interesting project"
-      And there is an existing publication of the proposal titled "Really interesting project"
-      And the status of the proposal titled "Really interesting project" is "PUBLISHED"
-    When I withdraw the submission of the proposal titled "Really interesting project"
-    Then I get error 500 with message "Invalid proposal status 'PUBLISHED', should be 'SUBMITTED'"
-      And the status of the proposal titled "Really interesting project" is "PUBLISHED"
+    And there is an existing submission of the proposal titled "Really interesting project"
+    And there is an existing publication of the proposal titled "Really interesting project"
+    And the status of the proposal titled "Really interesting project" is "PUBLISHED"
+    And there is an existing user with id "123"
+    And there is an existing user with id "456"
+    When I assign a existing user to the published proposal titled "Really interesting project"
+    Then I get error 500 with message "A proposal submission is full"
 
