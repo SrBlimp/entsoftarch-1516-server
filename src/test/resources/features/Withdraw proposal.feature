@@ -16,7 +16,7 @@ Feature: Withdraw proposal
     Given there is an existing proposal with title "Really interesting project"
       And the status of the proposal titled "Really interesting project" is "DRAFT"
     When I withdraw an un-existing submission
-    Then I get error 500 with message "Trying to withdraw un-existing submission"
+    Then I get error 400 with message "may not be null"
       And the status of the proposal titled "Really interesting project" is "DRAFT"
 
   Scenario: Withdraw submitted proposal but wrong status "DRAFT"

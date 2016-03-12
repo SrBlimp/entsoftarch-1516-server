@@ -1,10 +1,12 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
-import cat.udl.eps.entsoftarch.thesismarket.domain.*;
+import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalWithdrawalRepository;
 import com.jayway.jsonpath.JsonPath;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -26,6 +28,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -221,8 +224,30 @@ public class MyStepdefs {
 
     @Then("^I get error (\\d+) with message \"([^\"]*)\"$")
     public void iGetErrorWithMessage(int status, String message) throws Throwable {
-        result.andExpect(status().is(status))
-                .andExpect(jsonPath("$.message", is(message)));
+        result.andDo(print())
+                .andExpect(status().is(status))
+                .andExpect(jsonPath("$..message", hasItem(message)));
     }
+
+    @When("^I create the proposal with title \"([^\"]*)\"$")
+    public void iCreateTheProposalWithTitle(String title) throws Throwable {
+        String message = String.format(
+                "{ \"title\": \"%s\" }", title);
+
+        result = mockMvc.perform(post("/proposals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @Then("^new proposal with title \"([^\"]*)\"$")
+    public void newProposalWithTitle(String title) throws Throwable {
+        result.andExpect(status().isCreated())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(title)));
+    }
+
+
 }
 

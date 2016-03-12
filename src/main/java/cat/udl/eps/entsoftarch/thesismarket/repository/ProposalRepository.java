@@ -20,4 +20,6 @@ public interface ProposalRepository extends PagingAndSortingRepository<Proposal,
     // http://docs.spring.io/spring-data/jpa/docs/current/reference/html/
 
     List<Proposal> findByTitleContaining(String title);
+
+    Proposal findByTitle(String title);
 }
