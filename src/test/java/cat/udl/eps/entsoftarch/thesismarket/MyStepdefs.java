@@ -143,21 +143,6 @@ public class MyStepdefs {
                 .accept(MediaType.APPLICATION_JSON));
     }
 
-    @When("^I comment the proposal publication of the proposal titled \"([^\"]*)\"$")
-    public void iCommentTheProposalPublicationOfTheProposalTitled(String title) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalPublication proposalPublication = proposalSubmission.getPublishedBy();
-
-        String message = String.format(
-                "{ \"comments\": \"proposalPublications/%s\" }", proposalPublication.getId());
-
-        result = mockMvc.perform(post("/comments")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(message)
-                .accept(MediaType.APPLICATION_JSON));
-    }
-
     @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
     public void iCommentTheProposalWithTitleWithACommentWithText(String title, String text) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
