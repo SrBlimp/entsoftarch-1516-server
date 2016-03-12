@@ -50,10 +50,14 @@ public class MyStepdefs {
     private MockMvc mockMvc;
     private ResultActions result;
 
-    @Autowired private WebApplicationContext wac;
-    @Autowired private ProposalRepository proposalRepository;
-    @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
-    @Autowired private ProposalPublicationRepository proposalPublicationRepository;
+    @Autowired
+    private WebApplicationContext wac;
+    @Autowired
+    private ProposalRepository proposalRepository;
+    @Autowired
+    private ProposalSubmissionRepository proposalSubmissionRepository;
+    @Autowired
+    private ProposalPublicationRepository proposalPublicationRepository;
 
     @Before
     public void setup() {
