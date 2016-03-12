@@ -1,11 +1,13 @@
 package cat.udl.eps.entsoftarch.thesismarket.security;
 
+import cat.udl.eps.entsoftarch.thesismarket.domain.Professor;
+import cat.udl.eps.entsoftarch.thesismarket.domain.Student;
+import cat.udl.eps.entsoftarch.thesismarket.domain.User;
+import cat.udl.eps.entsoftarch.thesismarket.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
-
-import javax.inject.Inject;
 
 /**
  * Created by http://rhizomik.net/~roberto/
@@ -13,19 +15,22 @@ import javax.inject.Inject;
 @Configuration
 public class AuthenticationTestConfig extends GlobalAuthenticationConfigurerAdapter {
 
-    @Inject UserDetailsContextMapper userDetailsContextMapper;
+    @Autowired UserRepository userRepository;
 
     @Override
     public void init(AuthenticationManagerBuilder auth) throws Exception {
         auth
             .inMemoryAuthentication()
                 .withUser("admin").password("password").roles("ADMIN").and()
-                .withUser("coordinator").password("password").roles("COORDINATOR");
-        auth
-            .ldapAuthentication()
-                .userSearchFilter("uid={0}")
-                .contextSource().ldif("classpath:ldap-test.ldif").root("dc=UdL,dc=es")
-                .and()
-            .userDetailsContextMapper(userDetailsContextMapper);
+                .withUser("coordinator").password("password").roles("COORDINATOR").and()
+                .withUser("professor1").password("password").roles("PROFESSOR", "PROPONENT").and()
+                .withUser("student1").password("password").roles("STUDENT", "PROPONENT");
+
+        User professor = new Professor();
+        professor.setUsername("professor1");
+        userRepository.save(professor);
+        User student = new Student();
+        professor.setUsername("student1");
+        userRepository.save(student);
     }
 }
