@@ -1,13 +1,14 @@
 package cat.udl.eps.entsoftarch.thesismarket.service;
 
-import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
+import cat.udl.eps.entsoftarch.thesismarket.domain.*;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -22,10 +23,12 @@ public class ProposalWithdrawalEventHandler {
     final Logger logger = LoggerFactory.getLogger(ProposalWithdrawalEventHandler.class);
 
     @Autowired private ProposalRepository proposalRepository;
+    @Autowired private ProponentRepository proponentRepository;
 
     @HandleBeforeCreate
     @Transactional
-    public void handleProposalWithdrawalPreCreate(ProposalWithdrawal proposalWithdrawal){
+    @PreAuthorize("hasRole('PROPONENT')")
+    public void handleProposalWithdrawalPreCreate(ProposalWithdrawal proposalWithdrawal) {
         logger.info("Before creating: {}", proposalWithdrawal.toString());
 
         ProposalSubmission submission = proposalWithdrawal.getWithdraws();
@@ -36,9 +39,10 @@ public class ProposalWithdrawalEventHandler {
         Assert.isNull(submission.getPublishedBy(),
                 "To withdraw a proposal submission it should be unpublished");
 
-        //TODO
-        //proposalWithdrawal.setAgent(currentUser);
-        //Assert.isTrue(proposal.getCreator().equals(proposalWithdrawal.getAgent()));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Proponent proponent = proponentRepository.findOne(username);
+        proposalWithdrawal.setAgent(proponent);
+        Assert.isTrue(proposal.getCreator().equals(proposalWithdrawal.getAgent()));
 
         proposal.setStatus(Proposal.Status.DRAFT);
         proposalRepository.save(proposal);

@@ -1,12 +1,9 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
-import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
+import cat.udl.eps.entsoftarch.thesismarket.domain.*;
+import cat.udl.eps.entsoftarch.thesismarket.repository.*;
+import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
+import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import com.jayway.jsonpath.JsonPath;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -19,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationContextLoader;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,6 +30,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -40,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by http://rhizomik.net/~roberto/
  */
-@ContextConfiguration(classes = {ThesismarketApiApplication.class}, loader = SpringApplicationContextLoader.class)
+@ContextConfiguration(classes = {ThesismarketApiApplication.class, WebSecurityConfig.class, AuthenticationTestConfig.class}, loader = SpringApplicationContextLoader.class)
 @DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -50,20 +49,40 @@ public class MyStepdefs {
     private MockMvc mockMvc;
     private ResultActions result;
 
-    @Autowired
-    private WebApplicationContext wac;
-    @Autowired
-    private ProposalRepository proposalRepository;
-    @Autowired
-    private ProposalSubmissionRepository proposalSubmissionRepository;
-    @Autowired
-    private ProposalPublicationRepository proposalPublicationRepository;
+    @Autowired private WebApplicationContext wac;
+    @Autowired private ProposalRepository proposalRepository;
+    @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
+    @Autowired private ProposalPublicationRepository proposalPublicationRepository;
+    @Autowired private ProponentRepository proponentRepository;
+
+    private String currentUsername;
+    private String currentPassword;
 
     @Before
     public void setup() {
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(this.wac)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
+    }
+
+    @Given("^I login as \"([^\"]*)\" with password \"([^\"]*)\"$")
+    public void iLoginAsWithPassword(String username, String password) throws Throwable {
+        result = mockMvc.perform(get("/")
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(username, password)));
+        result.andExpect(status().isOk());
+        this.currentUsername = username;
+        this.currentPassword = password;
+    }
+
+    @Given("^there is an existing proposal with title \"([^\"]*)\" by \"([^\"]*)\"$")
+    public void thereIsAnExistingProposalWithTitleBy(String title, String username) throws Throwable {
+        Proposal proposal = new Proposal();
+        proposal.setTitle(title);
+        Proponent proponent = proponentRepository.findOne(username);
+        proposal.setCreator(proponent);
+        proposalRepository.save(proposal);
     }
 
     @Given("^there is an existing proposal with title \"([^\"]*)\"$")
@@ -140,7 +159,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalWithdrawals")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
@@ -166,7 +186,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalWithdrawals")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")

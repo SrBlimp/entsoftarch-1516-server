@@ -1,0 +1,24 @@
+dn: ou=People,dc=UdL,dc=es
+objectclass: top
+
+dn: ou=alumnes,dc=udl,dc=es
+objectclass: top
+
+dn: ou=People,ou=alumnes,dc=udl,dc=es
+objectclass: top
+
+# professor, People, udl.es
+dn: uid=professor1,ou=People,dc=udl,dc=es
+uid: professor1
+objectClass: inetOrgPerson
+employeeType: PDIPAS
+mail: professor1@thesismarket
+userPassword: password
+
+# student, People, alumnes, udl.es
+dn: uid=student1,ou=People,ou=alumnes,dc=udl,dc=es
+uid: student1
+objectClass: inetOrgPerson
+employeeType: EPS
+mail: student1@thesismarket
+userPassword: password
