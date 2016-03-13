@@ -17,7 +17,7 @@ import javax.inject.Inject;
  * Created by http://rhizomik.net/~roberto/
  */
 @Configuration
-@Profile("UdL-Deployment")
+@Profile("UdLDeploy")
 public class AuthenticationUdLConfig extends GlobalAuthenticationConfigurerAdapter {
 
     @Autowired UserRepository userRepository;

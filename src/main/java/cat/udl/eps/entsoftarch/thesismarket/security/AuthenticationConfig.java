@@ -16,7 +16,7 @@ import org.springframework.security.config.annotation.authentication.configurers
  * Created by http://rhizomik.net/~roberto/
  */
 @Configuration
-@Profile("!UdL-Deployment")
+@Profile("!UdLDeploy")
 public class AuthenticationConfig extends GlobalAuthenticationConfigurerAdapter {
 
     @Autowired UserRepository userRepository;
