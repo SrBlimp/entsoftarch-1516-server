@@ -1,5 +1,9 @@
 package cat.udl.eps.entsoftarch.thesismarket.security;
 
+import cat.udl.eps.entsoftarch.thesismarket.domain.Coordinator;
+import cat.udl.eps.entsoftarch.thesismarket.domain.User;
+import cat.udl.eps.entsoftarch.thesismarket.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
@@ -14,6 +18,7 @@ import javax.inject.Inject;
 public class AuthenticationTestConfig extends GlobalAuthenticationConfigurerAdapter {
 
     @Inject UserDetailsContextMapper userDetailsContextMapper;
+    @Autowired UserRepository userRepository;
 
     @Override
     public void init(AuthenticationManagerBuilder auth) throws Exception {
@@ -21,6 +26,11 @@ public class AuthenticationTestConfig extends GlobalAuthenticationConfigurerAdap
             .inMemoryAuthentication()
                 .withUser("admin").password("password").roles("ADMIN").and()
                 .withUser("coordinator").password("password").roles("COORDINATOR");
+
+        User coordinator = new Coordinator();
+        coordinator.setUsername("coordinator");
+        userRepository.save(coordinator);
+
         auth
             .ldapAuthentication()
                 .userSearchFilter("uid={0}")

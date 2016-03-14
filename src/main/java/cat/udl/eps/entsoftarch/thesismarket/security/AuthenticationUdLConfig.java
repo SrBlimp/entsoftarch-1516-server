@@ -1,5 +1,9 @@
 package cat.udl.eps.entsoftarch.thesismarket.security;
 
+import cat.udl.eps.entsoftarch.thesismarket.domain.Coordinator;
+import cat.udl.eps.entsoftarch.thesismarket.domain.User;
+import cat.udl.eps.entsoftarch.thesismarket.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
@@ -13,9 +17,10 @@ import javax.inject.Inject;
  * Created by http://rhizomik.net/~roberto/
  */
 @Configuration
-@Profile("UdL-Deployment")
+@Profile("UdLDeploy")
 public class AuthenticationUdLConfig extends GlobalAuthenticationConfigurerAdapter {
 
+    @Autowired UserRepository userRepository;
     @Inject UserDetailsContextMapper userDetailsContextMapper;
 
     @Override
@@ -28,6 +33,11 @@ public class AuthenticationUdLConfig extends GlobalAuthenticationConfigurerAdapt
                 .passwordEncoder(encoder)
                 .withUser("admin").password("18LcJuI3xeanShlrg/oherDmVf4=").roles("ADMIN").and()
                 .withUser("coordinator").password("18LcJuI3xeanShlrg/oherDmVf4=").roles("COORDINATOR");
+
+        User coordinator = new Coordinator();
+        coordinator.setUsername("coordinator");
+        userRepository.save(coordinator);
+
         auth
             .ldapAuthentication()
                 .userSearchFilter("uid={0}")
