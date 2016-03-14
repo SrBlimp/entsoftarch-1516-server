@@ -38,3 +38,8 @@ Feature: Submit proposal
     When I submit the proposal with title "Really interesting project"
     Then I get error 500 with message "Invalid proposal status 'REGISTERED', should be 'DRAFT'"
 
+  Scenario: Submit a proposal already deposited
+    Given there is an existing proposal with title "Really interesting project"
+    And the status of the proposal titled "Really interesting project" is set to "DEPOSITED"
+    When I submit the proposal with title "Really interesting project"
+    Then I get error 500 with message "Invalid proposal status 'DEPOSITED', should be 'DRAFT'"
