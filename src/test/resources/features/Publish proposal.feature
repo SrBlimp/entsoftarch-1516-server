@@ -25,6 +25,7 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a submitted proposal" is "SUBMITTED"
     And there is not a publication of the submission of the proposal titled "Publish a submitted proposal"
     When I publish the proposal with title "Publish a submitted proposal"
+    And there is an existing publication of the proposal titled "Publish a submitted proposal"
     Then I have a proposal publication with title "Publish a submitted proposal"
     And the status of the proposal titled "Publish a submitted proposal" is "PUBLISHED"
 
@@ -48,9 +49,7 @@ Feature: Publish proposal
   Scenario: Comment publish proposal
     Given there is an existing proposal with title "Comment publish proposal"
     And there is an existing submission of the proposal titled "Comment publish proposal"
-    And there is an existing publication of the proposal titled "Comment publish proposal"
-    And the status of the proposal titled "Comment publish proposal" is "PUBLISHED"
-    When I comment the proposal with title "Comment publish proposal" with a comment with text "This is a comment"
-    Then I have a proposal publication with title "Comment publish proposal"
-    And the status of the proposal titled "Comment publish proposal" is "PUBLISHED"
-    And I have created a comment that comments a proposal with text "This is a comment"
+    And there is not a publication of the submission of the proposal titled "Comment publish proposal"
+    When I publish the proposal with title "Comment publish proposal"
+    And I comment the proposal with title "Comment publish proposal" with a comment with text "This is a comment"
+    Then I have created a comment that comments a proposal with text "This is a comment"
