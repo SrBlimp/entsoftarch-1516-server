@@ -43,7 +43,7 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a published proposal" is "PUBLISHED"
     When I publish the proposal with title "Publish a published proposal"
     Then I get error 500 with message "Invalid proposal status 'PUBLISHED', should be 'SUBMITTED'"
-    And the status of the proposal titled "Publish a draft proposal" is "PUBLISHED"
+    And the status of the proposal titled "Publish a published proposal" is "PUBLISHED"
 
   Scenario: Comment publish proposal
     Given there is an existing proposal with title "Comment publish proposal"
