@@ -11,6 +11,7 @@ notifications:
     on_failure: always
 deploy:
   provider: heroku
+  strategy: git
   app:
     master: thesismarket-api
   api_key:
