@@ -33,6 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -122,6 +123,12 @@ public class MyStepdefs {
     public void theStatusOfTheProposalTitledIs(String title, Proposal.Status status) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         assertThat(proposal.getStatus(), is(status));
+    }
+
+    @And("^there is not a submission of the proposal titled \"([^\"]*)\"$")
+    public void thereIsNotASubmissionOfTheProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertTrue(proposalSubmissionRepository.findBySubmits(proposal).isEmpty());
     }
 
     @And("^there is not a publication of the submission of the proposal titled \"([^\"]*)\"$")
@@ -239,6 +246,17 @@ public class MyStepdefs {
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
+    }
+
+    @When("^I publish an un-existing submission$")
+    public void iPublishAnUnexistingSubmission() throws Throwable {
+        String message = String.format(
+                "{ \"publishes\": \"proposalSubmissions/%s\" }", 101929383);
+
+        result = mockMvc.perform(post("/proposalPublications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
     }
 
     @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")

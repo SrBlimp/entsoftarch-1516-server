@@ -3,12 +3,12 @@ Feature: Publish proposal
   As a coordinator
   I want review and make public the proposal
 
-  Scenario: Publish a draft proposal
+  Scenario: Publish an un-submitted proposal
     Given there is an existing proposal with title "Publish a draft proposal"
     And there is not a submission of the proposal titled "Publish a draft proposal"
     And the status of the proposal titled "Publish a draft proposal" is "DRAFT"
-    When I publish the proposal with title "Publish a draft proposal"
-    Then I get error 500 with message "Invalid proposal status 'DRAFT', should be 'SUBMITTED'"
+    When I publish an un-existing submission
+    Then I get error 500 with message "Trying to publish un-existing submission"
     And the status of the proposal titled "Publish a draft proposal" is "DRAFT"
 
   Scenario: Publish a submitted proposal but wrong status "DRAFT"
