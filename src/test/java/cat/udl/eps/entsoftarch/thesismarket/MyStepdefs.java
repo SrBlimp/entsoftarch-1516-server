@@ -352,6 +352,17 @@ public class MyStepdefs {
                 .accept(MediaType.APPLICATION_JSON));
     }
 
+    @When("^I publish an un-existing submission$")
+    public void iPublishAnUnexistingSubmission() throws Throwable {
+        String message = String.format(
+                "{ \"publishes\": \"proposalSubmissions/%s\" }", 101929383);
+
+        result = mockMvc.perform(post("/proposalPublications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
     @When("^I register un-published proposal$")
     public void iRegisterUnPublishedProposal() throws Throwable {
         String message = String.format(
