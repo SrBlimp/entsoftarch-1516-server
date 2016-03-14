@@ -31,6 +31,7 @@ public class ProposalPublishEventHandler {
         Assert.notNull(submission, "Trying to publish un-existing submission");
 
         Proposal proposal = submission.getSubmits();
-        Assert.isTrue(proposal.getStatus().equals(Proposal.Status.SUBMITTED), "The proposal not has the state submitted");
+        Assert.isTrue(proposal.getStatus().equals(Proposal.Status.SUBMITTED),
+                "Invalid proposal status '"+proposal.getStatus()+"', should be '"+ Proposal.Status.SUBMITTED+"'");
     }
 }
