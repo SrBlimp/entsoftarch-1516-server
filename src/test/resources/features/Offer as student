@@ -26,8 +26,9 @@ Feature: Offer as student
       #And there aren't an existing publication of the proposal titled "Really interesdentting proposal"
       And the status of the proposal titled "Really interesting proposal" is "SUBMITTED"
     When I offer as student to a un-existing publication proposal
-    Then I get error 500 with message "Invalid proposal status 'SUBMITTED', should be 'PUBLISHED'"
-      And the status of the proposal titled "Really interesting project" is "SUBMITTED"
+    #Then I get error 500 with message "Invalid proposal status 'SUBMITTED', should be 'PUBLISHED'"
+    Then I get error 400 with message "may not be null"
+      And the status of the proposal titled "Really interesting proposal" is "SUBMITTED"
 
 #  Scenario: Student is offered for an assigned proposal created by a teacher
 #    Given there is an existing proposal with title "<string>"
