@@ -49,11 +49,16 @@ public class MyStepdefs {
     private MockMvc mockMvc;
     private ResultActions result;
 
-    @Autowired private WebApplicationContext wac;
-    @Autowired private ProposalRepository proposalRepository;
-    @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
-    @Autowired private ProposalPublicationRepository proposalPublicationRepository;
-    @Autowired private ProponentRepository proponentRepository;
+    @Autowired
+    private WebApplicationContext wac;
+    @Autowired
+    private ProposalRepository proposalRepository;
+    @Autowired
+    private ProposalSubmissionRepository proposalSubmissionRepository;
+    @Autowired
+    private ProposalPublicationRepository proposalPublicationRepository;
+    @Autowired
+    private ProponentRepository proponentRepository;
 
     private String currentUsername;
     private String currentPassword;
@@ -76,7 +81,7 @@ public class MyStepdefs {
         this.currentPassword = password;
     }
 
-    @Given("^there is an existing proposal with title \"([^\"]*)\" by \"([^\"]*)\"$")
+    @And("^there is an existing proposal with title \"([^\"]*)\" by \"([^\"]*)\"$")
     public void thereIsAnExistingProposalWithTitleBy(String title, String username) throws Throwable {
         Proposal proposal = new Proposal();
         proposal.setTitle(title);
@@ -143,7 +148,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalSubmissions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I withdraw the submission of the proposal titled \"([^\"]*)\"$")
@@ -163,6 +169,22 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
+    @When("^I comment the proposal publication of the proposal titled \"([^\"]*)\"$")
+    public void iCommentTheProposalPublicationOfTheProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalSubmission.getPublishedBy();
+
+        String message = String.format(
+                "{ \"comments\": \"proposalPublications/%s\" }", proposalPublication.getId());
+
+        result = mockMvc.perform(post("/comments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
     @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
     public void iCommentTheProposalWithTitleWithACommentWithText(String title, String text) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -175,7 +197,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/comments")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I withdraw an un-existing submission$")
