@@ -148,8 +148,7 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalSubmissions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword)));
+                .accept(MediaType.APPLICATION_JSON));
     }
 
     @When("^I withdraw the submission of the proposal titled \"([^\"]*)\"$")
