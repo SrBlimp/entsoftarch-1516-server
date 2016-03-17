@@ -341,9 +341,9 @@ public class MyStepdefs {
                 accept(MediaType.APPLICATION_JSON));
 
         response = result
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andReturn().getResponse().getContentAsString();
 
         String proposalSubmissionUri = JsonPath.read(response, "$._links.publishes.href");
