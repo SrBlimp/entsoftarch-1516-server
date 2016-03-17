@@ -228,7 +228,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalSubmissions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I publish the proposal with title \"([^\"]*)\"$")
@@ -638,7 +639,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalSubmissions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 }
 
