@@ -630,5 +630,15 @@ public class MyStepdefs {
     }
 
 
+    @When("^I submit an unexisting proposal$")
+    public void iSubmitAnUnexistingProposal() throws Throwable {
+        String message = String.format(
+                "{ \"submits\": \"proposals/%s\" }", 9999);
+
+        result = mockMvc.perform(post("/proposalSubmissions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
 }
 

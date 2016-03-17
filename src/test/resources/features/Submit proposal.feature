@@ -12,7 +12,7 @@ Feature: Submit proposal
   Scenario: Submit unexisting proposal
     Given there is an existing proposal with title "Really interesting project"
     When I submit an unexisting proposal
-    Then I get error 500 with message "Submits mustn't be null"
+    Then I get error 400 with message "the proposal should exist"
 
   Scenario: Submit a submitted proposal
     Given there is an existing proposal with title "Really interesting project"

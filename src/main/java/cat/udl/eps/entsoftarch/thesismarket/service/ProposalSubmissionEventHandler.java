@@ -30,7 +30,6 @@ public class ProposalSubmissionEventHandler {
 
         logger.info("Before creating: {}", proposalSubmission.toString());
 
-        Assert.notNull(proposalSubmission.getSubmits(), "Submits mustn't be null");
         Proposal submits = proposalSubmission.getSubmits();
 
         Assert.isTrue(submits.getStatus().equals(Proposal.Status.DRAFT),
