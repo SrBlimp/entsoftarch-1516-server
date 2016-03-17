@@ -1,7 +1,10 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
-import cat.udl.eps.entsoftarch.thesismarket.repository.*;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
 import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import com.jayway.jsonpath.JsonPath;
