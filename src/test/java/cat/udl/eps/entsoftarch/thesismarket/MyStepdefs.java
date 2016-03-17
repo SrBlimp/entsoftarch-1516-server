@@ -213,6 +213,18 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
+    @When("^I comment an un-existing publication$")
+    public void iCommentAnUnExistingPublication() throws Throwable {
+        String message = String.format(
+                "{ \"comments\": \"proposalPublications/%s\" }", 9999);
+
+        result = mockMvc.perform(post("/comments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
     @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")
     public void iHaveCreatedAProposalSubmissionThatSubmitsAProposalWithTitle(String title) throws Throwable {
 
@@ -288,6 +300,7 @@ public class MyStepdefs {
                 .accept(MediaType.APPLICATION_JSON));
     }
 
+
     @Then("^new proposal with title \"([^\"]*)\"$")
     public void newProposalWithTitle(String title) throws Throwable {
         result.andExpect(status().isCreated())
@@ -295,7 +308,5 @@ public class MyStepdefs {
                 .andDo(print())
                 .andExpect(jsonPath("$.title", is(title)));
     }
-
-
 }
 
