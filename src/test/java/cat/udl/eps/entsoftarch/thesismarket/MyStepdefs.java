@@ -521,8 +521,8 @@ public class MyStepdefs {
     @When("^I edit the proposal title with \"([^\"]*)\"$")
     public void iEdItTheProposalTitleWith(String newTitle) throws Throwable {
 
-        proposal.setTitle(newTitle);
-        proposalRepository.save(proposal);
+        //proposal.setTitle(newTitle);
+        //proposalRepository.save(proposal);
     }
 
     @When("^I edit the proposal with title \"([^\"]*)\" title with \"([^\"]*)\"$")
