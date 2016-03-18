@@ -18,7 +18,7 @@ import org.springframework.util.Assert;
 @Component
 @RepositoryEventHandler(ProposalPublication.class)
 public class ProposalPublishEventHandler {
-    final Logger logger = LoggerFactory.getLogger(ProposalWithdrawalEventHandler.class);
+    final Logger logger = LoggerFactory.getLogger(ProposalPublishEventHandler.class);
 
     @HandleBeforeCreate
     @Transactional
