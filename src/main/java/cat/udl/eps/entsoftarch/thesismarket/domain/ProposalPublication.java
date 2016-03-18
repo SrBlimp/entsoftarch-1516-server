@@ -16,18 +16,12 @@ import java.util.Set;
 public class ProposalPublication extends Event {
     @ManyToOne
     private Coordinator agent;
-    @ManyToOne
-    private Student student;
-    @ManyToOne
-    private DirectorOffer director;
-    @ManyToOne
-    private CoDirectorOffer coDirector;
     @OneToOne
     @NotNull
     private ProposalSubmission publishes;
     @OneToMany(mappedBy = "comments")
     private Set<Comment> commentedBy = new HashSet<>();
-    /*@OneToOne(mappedBy = "rejects")
+    @OneToOne(mappedBy = "rejects")
     private ProjectRejection rejectedBy;
     @OneToOne(mappedBy = "registers")
     private ProposalRegistration registeredBy;
@@ -37,7 +31,7 @@ public class ProposalPublication extends Event {
     private Set<DirectorOffer> interestedDirectors = new HashSet<>();
     @OneToMany(mappedBy = "target")
     private Set<CoDirectorOffer> interestedCoDirectors = new HashSet<>();
-*/
+
     public Coordinator getAgent() { return agent; }
 
     public void setAgent(Coordinator agent) { this.agent = agent; }
@@ -50,19 +44,6 @@ public class ProposalPublication extends Event {
 
     public void setCommentedBy(Set<Comment> commentedBy) { this.commentedBy = commentedBy; }
 
-    public Student getStudent() { return student; }
-
-    public void setStudent(Student student) { this.student = student; }
-
-    public DirectorOffer getDirector() {return director; }
-
-    public void setDirector(DirectorOffer director) {this.director = director; }
-
-    public CoDirectorOffer getCoDirector() { return coDirector; }
-
-    public void setCoDirector(CoDirectorOffer coDirector) {this.coDirector = coDirector; }
-
-    /*
     @Nullable
     public ProjectRejection getRejectedBy() { return rejectedBy; }
 
@@ -84,5 +65,4 @@ public class ProposalPublication extends Event {
     public Set<CoDirectorOffer> getInterestedCoDirectors() { return interestedCoDirectors; }
 
     public void setInterestedCoDirectors(Set<CoDirectorOffer> interestedCoDirectors) { this.interestedCoDirectors = interestedCoDirectors; }
-    */
 }
