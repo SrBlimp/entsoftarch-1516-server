@@ -1,13 +1,16 @@
 package cat.udl.eps.entsoftarch.thesismarket.service;
 
 import cat.udl.eps.entsoftarch.thesismarket.domain.Comment;
+import cat.udl.eps.entsoftarch.thesismarket.domain.Proponent;
 import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -23,6 +26,8 @@ public class CommentEventHandler {
 
     @Autowired
     private ProposalRepository proposalRepository;
+    @Autowired
+    private ProponentRepository proponentRepository;
 
     @HandleBeforeCreate
     @Transactional
@@ -37,8 +42,9 @@ public class CommentEventHandler {
                 "Invalid proposal status '" + proposal.getStatus() + "', should be '" +
                         Proposal.Status.PUBLISHED + "'");
 
-        proposal.setStatus(Proposal.Status.PUBLISHED);
-        proposalRepository.save(proposal);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Proponent proponent = proponentRepository.findOne(username);
+        comment.setAuthor(proponent);
     }
 
     @HandleBeforeSave
