@@ -42,7 +42,9 @@ public class CommentEventHandler {
                 "Invalid proposal status '" + proposal.getStatus() + "', should be '" +
                         Proposal.Status.PUBLISHED + "'");
 
-        proposalRepository.save(proposal);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Proponent proponent = proponentRepository.findOne(username);
+        comment.setAuthor(proponent);
     }
 
     @HandleBeforeSave
