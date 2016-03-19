@@ -26,6 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -52,16 +53,11 @@ public class MyStepdefs {
     private MockMvc mockMvc;
     private ResultActions result;
 
-    @Autowired
-    private WebApplicationContext wac;
-    @Autowired
-    private ProposalRepository proposalRepository;
-    @Autowired
-    private ProposalSubmissionRepository proposalSubmissionRepository;
-    @Autowired
-    private ProposalPublicationRepository proposalPublicationRepository;
-    @Autowired
-    private ProponentRepository proponentRepository;
+    @Autowired private WebApplicationContext wac;
+    @Autowired private ProposalRepository proposalRepository;
+    @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
+    @Autowired private ProposalPublicationRepository proposalPublicationRepository;
+    @Autowired private ProponentRepository proponentRepository;
 
     private String currentUsername;
     private String currentPassword;
@@ -76,12 +72,13 @@ public class MyStepdefs {
 
     @Given("^I login as \"([^\"]*)\" with password \"([^\"]*)\"$")
     public void iLoginAsWithPassword(String username, String password) throws Throwable {
-        result = mockMvc.perform(get("/")
-                .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(username, password)));
-        result.andExpect(status().isOk());
         this.currentUsername = username;
         this.currentPassword = password;
+    }
+
+    @Given("^I'm not logged in$")
+    public void iMNotLoggedIn() throws Throwable {
+        this.currentUsername = this.currentPassword = null;
     }
 
     @And("^there is an existing proposal with title \"([^\"]*)\" by \"([^\"]*)\"$")
@@ -158,17 +155,18 @@ public class MyStepdefs {
     public void iWithdrawTheSubmissionOfTheProposalTitled(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalWithdrawal proposalWithdrawal = new ProposalWithdrawal();
-        proposalWithdrawal.setWithdraws(proposalSubmission);
 
         String message = String.format(
                 "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
 
-        result = mockMvc.perform(post("/proposalWithdrawals")
+        MockHttpServletRequestBuilder postRequest = post("/proposalWithdrawals")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword)));
+                .accept(MediaType.APPLICATION_JSON);
+        if (currentUsername != null)
+           postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
     }
 
     @When("^I comment the proposal publication of the proposal titled \"([^\"]*)\"$")
@@ -287,8 +285,11 @@ public class MyStepdefs {
     @Then("^I get error (\\d+) with message \"([^\"]*)\"$")
     public void iGetErrorWithMessage(int status, String message) throws Throwable {
         result.andDo(print())
-                .andExpect(status().is(status))
-                .andExpect(jsonPath("$..message", hasItem(message)));
+                .andExpect(status().is(status));
+        if (result.andReturn().getResponse().getContentAsString().isEmpty())
+            result.andExpect(status().reason(is(message)));
+        else
+            result.andExpect(jsonPath("$..message", hasItem(message)));
     }
 
     @When("^I create the proposal with title \"([^\"]*)\"$")
@@ -301,7 +302,6 @@ public class MyStepdefs {
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
     }
-
 
     @Then("^new proposal with title \"([^\"]*)\"$")
     public void newProposalWithTitle(String title) throws Throwable {
