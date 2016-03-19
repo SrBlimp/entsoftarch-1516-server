@@ -27,7 +27,7 @@ public class ProposalWithdrawalEventHandler {
 
     @HandleBeforeCreate
     @Transactional
-    @PreAuthorize("hasRole('PROPONENT')")
+    @PreAuthorize("#proposalWithdrawal.withdraws.submits.creator.username == authentication.name")
     public void handleProposalWithdrawalPreCreate(ProposalWithdrawal proposalWithdrawal) {
         logger.info("Before creating: {}", proposalWithdrawal.toString());
 
@@ -42,7 +42,6 @@ public class ProposalWithdrawalEventHandler {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Proponent proponent = proponentRepository.findOne(username);
         proposalWithdrawal.setAgent(proponent);
-        Assert.isTrue(proposal.getCreator().equals(proposalWithdrawal.getAgent()));
 
         proposal.setStatus(Proposal.Status.DRAFT);
         proposalRepository.save(proposal);
