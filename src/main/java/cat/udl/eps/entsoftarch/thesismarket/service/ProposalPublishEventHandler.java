@@ -4,8 +4,10 @@ import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
+import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
@@ -20,12 +22,12 @@ import org.springframework.util.Assert;
 public class ProposalPublishEventHandler {
     final Logger logger = LoggerFactory.getLogger(ProposalPublishEventHandler.class);
 
+    @Autowired private ProposalRepository proposalRepository;
+
     @HandleBeforeCreate
     @Transactional
     public void handleProposalPublicationPreCreated(ProposalPublication proposalPublication) {
         logger.info("Before creating: {}", proposalPublication.toString());
-
-        //Proposal proposal = proposalPublication.getPublishes().getSubmits();
 
         ProposalSubmission submission = proposalPublication.getPublishes();
         Assert.notNull(submission, "Trying to publish un-existing submission");
@@ -33,5 +35,8 @@ public class ProposalPublishEventHandler {
         Proposal proposal = submission.getSubmits();
         Assert.isTrue(proposal.getStatus().equals(Proposal.Status.SUBMITTED),
                 "Invalid proposal status '"+proposal.getStatus()+"', should be '"+ Proposal.Status.SUBMITTED+"'");
+
+        proposal.setStatus(Proposal.Status.PUBLISHED);
+        proposalRepository.save(proposal);
     }
 }
