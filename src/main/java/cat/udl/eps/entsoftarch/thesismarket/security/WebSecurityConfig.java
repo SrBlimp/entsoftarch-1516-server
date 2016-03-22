@@ -43,6 +43,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/proposalWithdrawals*/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/proposalWithdrawals*/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/proposalWithdrawals*/**").authenticated()
+                //PublishProposal
+                .antMatchers(HttpMethod.PUT, "/proposalPublications*/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/proposalPublications*/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/proposalPublications*/**").authenticated()
+                .antMatchers(HttpMethod.PATCH, "/proposalPublications*/**").authenticated()
                 //Comment
                 .antMatchers(HttpMethod.PUT, "/comments*/**").authenticated()
                 .antMatchers(HttpMethod.POST, "/comments*/**").authenticated()
