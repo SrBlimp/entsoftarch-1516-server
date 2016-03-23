@@ -310,5 +310,76 @@ public class MyStepdefs {
                 .andDo(print())
                 .andExpect(jsonPath("$.title", is(title)));
     }
+
+
+    @When("^I offer as student to a publication proposal with title \"([^\"]*)\"$")
+    public void iOfferAsStudentToAPublicationProposalWithTitle(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+
+        String message = String.format(
+                "{ \"target\": \"proposalPublications/%s\" }", proposalPublication.getId());
+
+        result = mockMvc.perform(post("/studentOffers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @Then("^I have created an offer student of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
+    public void iHaveCreatedAnOfferStudentOfThePublicationProposalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
+
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String proposalPublicationUri = JsonPath.read(response, "$._links.target.href");
+
+        result = mockMvc.perform(get(proposalPublicationUri).
+                accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        String proposalSubmissionUri = JsonPath.read(response, "$._links.publishes.href");
+
+        result = mockMvc.perform(get(proposalSubmissionUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        String submitsUri = JsonPath.read(response, "$._links.submits.href");
+
+        result = mockMvc.perform(get(submitsUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        //aqui no hace falta guardar result en response porque no se necesita ir a ningun atributo de esta respuesta
+        result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(title)));
+
+    }
+
+    @When("^I offer as student to a un-existing publication proposal$")
+    public void iOfferAsStudentToAUnExistingPublicationProposal() throws Throwable {
+        String message = String.format(
+                "{ \"target\": \"proposalPublications/%s\" }", 9999);
+
+        result = mockMvc.perform(post("/studentOffers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
 }
 
