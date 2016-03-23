@@ -8,7 +8,7 @@ Feature: Publish proposal
     And there is not a submission of the proposal titled "Publish a draft proposal"
     And the status of the proposal titled "Publish a draft proposal" is "DRAFT"
     When I publish an un-existing submission
-    Then I get error 500 with message "Trying to publish un-existing submission"
+    Then I get error 400 with message "may not be null"
     And the status of the proposal titled "Publish a draft proposal" is "DRAFT"
 
   Scenario: Publish a submitted proposal but wrong status "DRAFT"
@@ -25,7 +25,6 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a submitted proposal" is "SUBMITTED"
     And there is not a publication of the submission of the proposal titled "Publish a submitted proposal"
     When I publish the proposal with title "Publish a submitted proposal"
-    And there is an existing publication of the proposal titled "Publish a submitted proposal"
     Then I have a proposal publication with title "Publish a submitted proposal"
     And the status of the proposal titled "Publish a submitted proposal" is "PUBLISHED"
 
@@ -48,6 +47,7 @@ Feature: Publish proposal
 
   Scenario: Comment publish proposal
     Given there is an existing proposal with title "Comment publish proposal"
+    And I login as "professor1" with password "password"
     And there is an existing submission of the proposal titled "Comment publish proposal"
     And there is not a publication of the submission of the proposal titled "Comment publish proposal"
     When I publish the proposal with title "Comment publish proposal"
