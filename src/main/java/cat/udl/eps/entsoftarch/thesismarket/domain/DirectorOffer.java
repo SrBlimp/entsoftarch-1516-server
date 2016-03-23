@@ -22,5 +22,4 @@ public class DirectorOffer extends Offer {
     @JsonIgnore
     @Nullable
     DirectorAssignment assignedBy;
-
 }

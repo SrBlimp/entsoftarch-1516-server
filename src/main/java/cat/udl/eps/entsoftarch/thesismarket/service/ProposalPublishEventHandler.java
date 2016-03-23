@@ -1,7 +1,10 @@
 package cat.udl.eps.entsoftarch.thesismarket.service;
 
-import cat.udl.eps.entsoftarch.thesismarket.domain.*;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
+import cat.udl.eps.entsoftarch.thesismarket.domain.Coordinator;
+import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
+import cat.udl.eps.entsoftarch.thesismarket.repository.CoordinatorRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +25,7 @@ public class ProposalPublishEventHandler {
     final Logger logger = LoggerFactory.getLogger(ProposalPublishEventHandler.class);
 
     @Autowired private ProposalRepository proposalRepository;
-    @Autowired private ProponentRepository proponentRepository;
+    @Autowired private CoordinatorRepository coordinatorRepository;
 
     @HandleBeforeCreate
     @Transactional
@@ -37,8 +40,8 @@ public class ProposalPublishEventHandler {
                 "Invalid proposal status '"+proposal.getStatus()+"', should be '"+ Proposal.Status.SUBMITTED+"'");
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Proponent proponent = proponentRepository.findOne(username);
-        proposalPublication.setAgent(proponent);
+        Coordinator coordinator = coordinatorRepository.findOne(username);
+        proposalPublication.setAgent(coordinator);
 
         proposal.setStatus(Proposal.Status.PUBLISHED);
         proposalRepository.save(proposal);
