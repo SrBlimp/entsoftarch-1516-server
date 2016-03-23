@@ -33,6 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -124,6 +125,12 @@ public class MyStepdefs {
         assertThat(proposal.getStatus(), is(status));
     }
 
+    @And("^there is not a submission of the proposal titled \"([^\"]*)\"$")
+    public void thereIsNotASubmissionOfTheProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertTrue(proposalSubmissionRepository.findBySubmits(proposal).isEmpty());
+    }
+
     @And("^there is not a publication of the submission of the proposal titled \"([^\"]*)\"$")
     public void thereIsNotAPublicationOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -146,6 +153,22 @@ public class MyStepdefs {
                 "{ \"submits\": \"proposals/%s\" }", proposal.getId());
 
         result = mockMvc.perform(post("/proposalSubmissions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("^I publish the proposal with title \"([^\"]*)\"$")
+    public void iPublishTheProposalWithTitle(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = new ProposalPublication();
+        proposalPublication.setPublishes(proposalSubmission);
+
+        String message = String.format(
+                "{ \"publishes\": \"proposalSubmissions/%s\" }",  proposalSubmission.getId());
+
+        result = mockMvc.perform(post("/proposalPublications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
@@ -225,6 +248,17 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
+    @When("^I publish an un-existing submission$")
+    public void iPublishAnUnexistingSubmission() throws Throwable {
+        String message = String.format(
+                "{ \"publishes\": \"proposalSubmissions/%s\" }", 101929383);
+
+        result = mockMvc.perform(post("/proposalPublications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
     @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")
     public void iHaveCreatedAProposalSubmissionThatSubmitsAProposalWithTitle(String title) throws Throwable {
 
@@ -280,6 +314,36 @@ public class MyStepdefs {
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.text", is(text)));
+    }
+
+    @Then("^I have a proposal publication with title \"([^\"]*)\"$")
+    public void iHaveAProposalPublicationWithTitle(String title) throws Throwable {
+
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String publishesUri = JsonPath.read(response, "$._links.publishes.href");
+
+        result = mockMvc.perform(get(publishesUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        String submitsUri = JsonPath.read(response, "$._links.submits.href");
+
+        result = mockMvc.perform(get(submitsUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(title)));
     }
 
     @Then("^I get error (\\d+) with message \"([^\"]*)\"$")

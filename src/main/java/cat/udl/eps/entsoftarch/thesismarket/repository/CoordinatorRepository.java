@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @RepositoryRestResource
-public interface CoordinatorRepository extends PagingAndSortingRepository<Coordinator, Long> {
+public interface CoordinatorRepository extends PagingAndSortingRepository<Coordinator, String> {
 }
