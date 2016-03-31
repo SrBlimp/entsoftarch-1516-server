@@ -386,7 +386,9 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposals")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+        
     }
 
     @Then("^new proposal with title \"([^\"]*)\"$")

@@ -1,8 +1,11 @@
-# Created by Guille at 2/03/16
+
 
 Feature: Create proposal
   In order to create a proposal
   I want to check the correct creation
+
+  Background:
+    Given I login as "professor1" with password "password"
 
   Scenario: Create proposal
     When I create the proposal with title "Create new proposal"
