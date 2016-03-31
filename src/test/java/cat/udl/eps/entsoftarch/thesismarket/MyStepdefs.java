@@ -4,6 +4,9 @@ import cat.udl.eps.entsoftarch.thesismarket.config.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.config.MailTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
+import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
+import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
+import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import com.jayway.jsonpath.JsonPath;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -63,6 +66,7 @@ public class MyStepdefs {
     @Autowired private ProponentRepository proponentRepository;
     @Autowired private StudentRepository studentRepository;
     @Autowired private JavaMailSender javaMailSender;
+    @Autowired private UserRepository userRepository;
 
     private String currentUsername;
     private String currentPassword;
@@ -500,6 +504,30 @@ public class MyStepdefs {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @Given("^there is an existing student with id \"([^\"]*)\"$")
+    public void thereIsAnExistingUserWithId(String id) throws Throwable {
+        User user = new User();
+        user.setUsername(id);
+        userRepository.save(user);
+    }
+
+    @When("^I assign a existing user with id \"([^\"]*)\"$ to the published proposal titled \"([^\"]*)\"$")
+    public void iAssignExistingUserToProposalTitled(String id, String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalWithdrawal proposalWithdrawal = new ProposalWithdrawal();
+        proposalWithdrawal.setWithdraws(proposalSubmission);
+
+        String message = String.format(
+                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
+
+        result = mockMvc.perform(post("/proposalWithdrawals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+
     }
 
     @Then("^I have two offer student more created of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
