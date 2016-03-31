@@ -8,10 +8,9 @@ Feature: Assign student to a proposal
       And there is an existing submission of the proposal titled "Really interesting project"
       And there is an existing publication of the proposal titled "Really interesting project"
       And the status of the proposal titled "Really interesting project" is "PUBLISHED"
-      And there is an existing user with id "123"
-    When I assign a existing user to the published proposal titled "Really interesting project"
+      And there is an existing student with id "uname"
+    When I assign a existing user with id "uname" to the published proposal titled "Really interesting project"
     Then I have created a withdrawal of the submission of the proposal titled "Really interesting project"
-      /*QUE VA A AQUEST THEN?????????????????????????*/
 
   Scenario: Assign existing user to not existing proposal
     Given there is an existing user with title id "123"
