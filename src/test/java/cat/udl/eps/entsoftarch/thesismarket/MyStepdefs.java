@@ -33,6 +33,13 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
@@ -67,6 +74,7 @@ public class MyStepdefs {
     @Autowired private StudentRepository studentRepository;
     @Autowired private JavaMailSender javaMailSender;
     @Autowired private UserRepository userRepository;
+    @Autowired private StudentRepository stdRepository;
 
     private String currentUsername;
     private String currentPassword;
@@ -507,19 +515,26 @@ public class MyStepdefs {
     }
 
     @Given("^there is an existing student with id \"([^\"]*)\"$")
-    public void thereIsAnExistingUserWithId(String id) throws Throwable {
-        User user = new User();
-        user.setUsername(id);
-        userRepository.save(user);
+    public void thereIsAnExistingStudentWithId(String id) throws Throwable {
+        Student std = new Student();
+        std.setUsername(id);
+        stdRepository.save(std);
     }
 
-    @When("^I assign a existing user with id \"([^\"]*)\"$ to the published proposal titled \"([^\"]*)\"$")
+    @When("^I assign a existing user with id \"([^\"]*)\" to the published proposal titled \"([^\"]*)\"$")
     public void iAssignExistingUserToProposalTitled(String id, String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalWithdrawal proposalWithdrawal = new ProposalWithdrawal();
-        proposalWithdrawal.setWithdraws(proposalSubmission);
+        Student std = stdRepository.findOne(id);
 
+        Set<Student> students = proposal.getStudents();
+        students.add(std);
+        proposal.setStudents(students);
+
+        /*
+        String message = String.format(
+                "{ \"assigned\": \"proposal /%s to student /%s\" }", proposal.getTitle(), std.getUsername());*/
+
+        /*
         String message = String.format(
                 "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
 
@@ -528,7 +543,10 @@ public class MyStepdefs {
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
 
+        */
     }
+
+
 
     @Then("^I have two offer student more created of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
     public void iHaveTwoOfferStudentCreatedOfThePublicationProposalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
