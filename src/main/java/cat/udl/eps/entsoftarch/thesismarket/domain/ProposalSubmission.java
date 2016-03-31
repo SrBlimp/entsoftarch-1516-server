@@ -14,7 +14,7 @@ public class ProposalSubmission extends Event {
     @ManyToOne
     private Proponent agent;
     @ManyToOne
-    @NotNull
+    @NotNull(message = "the proposal should exist")
     private Proposal submits;
     @OneToOne(mappedBy = "publishes")
     private ProposalPublication publishedBy;

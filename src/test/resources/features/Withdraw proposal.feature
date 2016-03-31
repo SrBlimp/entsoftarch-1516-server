@@ -11,6 +11,7 @@ Feature: Withdraw proposal
       And there is an existing submission of the proposal titled "Really interesting project"
       And the status of the proposal titled "Really interesting project" is "SUBMITTED"
       And there is not a publication of the submission of the proposal titled "Really interesting project"
+    And there is an existing submission of the proposal titled "Really interesting project"
     When I withdraw the submission of the proposal titled "Really interesting project"
     Then I have created a withdrawal of the submission of the proposal titled "Really interesting project"
       And the status of the proposal titled "Really interesting project" is "DRAFT"

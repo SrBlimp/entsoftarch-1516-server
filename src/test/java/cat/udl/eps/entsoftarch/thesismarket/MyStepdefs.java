@@ -155,7 +155,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalSubmissions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I publish the proposal with title \"([^\"]*)\"$")
@@ -178,6 +179,8 @@ public class MyStepdefs {
     public void iWithdrawTheSubmissionOfTheProposalTitled(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalWithdrawal proposalWithdrawal = new ProposalWithdrawal();
+        proposalWithdrawal.setWithdraws(proposalSubmission);
 
         String message = String.format(
                 "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
@@ -444,6 +447,18 @@ public class MyStepdefs {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("^I submit an unexisting proposal$")
+    public void iSubmitAnUnexistingProposal() throws Throwable {
+        String message = String.format(
+                "{ \"submits\": \"proposals/%s\" }", 9999);
+
+        result = mockMvc.perform(post("/proposalSubmissions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 }
 
