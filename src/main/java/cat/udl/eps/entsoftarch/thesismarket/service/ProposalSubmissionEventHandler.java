@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -29,6 +30,7 @@ public class ProposalSubmissionEventHandler {
 
     @HandleBeforeCreate
     @Transactional
+    @PreAuthorize("#proposalSubmission.submits.creator.username == authentication.name")
     public void handleProposalSubmissionPreCreate(ProposalSubmission proposalSubmission){
 
         logger.info("Before creating: {}", proposalSubmission.toString());
@@ -41,7 +43,6 @@ public class ProposalSubmissionEventHandler {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Proponent proponent = proponentRepository.findOne(username);
         proposalSubmission.setAgent(proponent);
-        Assert.isTrue(submits.getCreator().equals(proposalSubmission.getAgent()));
 
         submits.setStatus(Proposal.Status.SUBMITTED);
         proposalRepository.save(submits);
