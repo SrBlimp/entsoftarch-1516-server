@@ -685,5 +685,36 @@ public class MyStepdefs {
                 .andReturn().getResponse().getContentAsString();
 
     }
+
+    @And("^the student of the proposal titled \"([^\"]*)\" is not null$")
+    public void theStudentOfTheProposalTitledIsNotNull(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertNotNull(proposal.getStudents());
+    }
+
+    @And("^the director of the proposal titled \"([^\"]*)\" is not null$")
+    public void theDirectorOfTheProposalTitledIsNotNull(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertNotNull(proposal.getDirector());
+    }
+
+    /*FALTA ARREGLAR - FALTA RELLENAR PROPOSAL REGISTRATION...*/
+    @When("^I register published proposal titled \"([^\"]*)\"$")
+    public void iRegisterPublishedProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication =  proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+        ProposalRegistration proposalRegistration = new ProposalRegistration();
+        proposalRegistration.setRegister(proposalPublication);
+
+        String message = String.format(
+                "{ \"register\": \"proposalPublications/%s\" }", proposalRegistration.getId());
+
+        result = mockMvc.perform(post("/proposalRegister")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
 }
 
