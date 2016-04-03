@@ -8,6 +8,7 @@ import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionReposit
 import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import com.jayway.jsonpath.JsonPath;
+import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -32,9 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -460,5 +459,36 @@ public class MyStepdefs {
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
     }
+
+    @And("^the student of the proposal titled \"([^\"]*)\" is not null$")
+    public void theStudentOfTheProposalTitledIsNotNull(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertNotNull(proposal.getStudents());
+    }
+
+    @And("^the director of the proposal titled \"([^\"]*)\" is not null$")
+    public void theDirectorOfTheProposalTitledIsNotNull(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertNotNull(proposal.getDirector());
+    }
+
+    /*FALTA ARREGLAR - FALTA RELLENAR PROPOSAL REGISTRATION...*/
+    @When("^I register published proposal titled \"([^\"]*)\"$")
+    public void iRegisterPublishedProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication =  proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+        ProposalRegistration proposalRegistration = new ProposalRegistration();
+        proposalRegistration.setRegister(proposalPublication);
+
+        String message = String.format(
+                "{ \"register\": \"proposalPublications/%s\" }", proposalRegistration.getId());
+
+        result = mockMvc.perform(post("/proposalRegister")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
 }
 
