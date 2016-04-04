@@ -561,12 +561,11 @@ public class MyStepdefs {
 
     @Given("^there isn't any proposal$")
     public void thereIsnTAnyProposal() throws Throwable {
-        Proposal proposal = null;
-        proposalRepository.save(proposal);
+        proposalRepository.deleteAll();
     }
 
-    @Then("^I have edited the proposal \"([^\"]*)\" that \"([^\"]*)\" the \"([^\"]*)\" with \"([^\"]*)\" \"([^\"]*)\"$")
-    public void iHaveEditedTheProposalThatTheWith(String arg0, String arg1, String arg2, String arg3, String arg4) throws Throwable {
+    @Then("^I have edited the proposal with title \"([^\"]*)\"$")
+    public void iHaveEditedTheProposalWithTitle(String arg0) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
