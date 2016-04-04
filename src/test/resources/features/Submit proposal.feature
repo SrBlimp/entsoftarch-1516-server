@@ -10,6 +10,7 @@ Feature: Submit proposal
     Given I login as "professor1" with password "password"
     When I submit the proposal with title "Really interesting project"
     Then I have created a proposal submission that submits a proposal with title "Really interesting project"
+    And the status of the proposal titled "Really interesting project" is "SUBMITTED"
 
 
   Scenario: Submit unexisting proposal
@@ -22,22 +23,29 @@ Feature: Submit proposal
     Given I login as "student1" with password "password"
     When I submit the proposal with title "Really interesting project"
     Then I get error 403 with message "Access is denied"
+    And the status of the proposal titled "Really interesting project" is "DRAFT"
+
 
   Scenario: Submit existing proposal with bad login
     Given I login as "professor24" with password "password24"
     When I submit the proposal with title "Really interesting project"
     Then I get error 401 with message "Bad credentials"
+    And the status of the proposal titled "Really interesting project" is "DRAFT"
+
 
   Scenario: Submit existing proposal without login
     Given I'm not logged in
     When I submit the proposal with title "Really interesting project"
     Then I get error 401 with message "Bad credentials"
+    And the status of the proposal titled "Really interesting project" is "DRAFT"
+
 
   Scenario: Submit a submitted proposal
     Given I login as "professor1" with password "password"
     And the status of the proposal titled "Really interesting project" is set to "SUBMITTED"
     When I submit the proposal with title "Really interesting project"
     Then I get error 500 with message "Invalid proposal status 'SUBMITTED', should be 'DRAFT'"
+
 
   Scenario: Submit a proposal already published
     Given I login as "professor1" with password "password"
