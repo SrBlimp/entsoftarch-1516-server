@@ -11,14 +11,13 @@ Feature: Offer as student
     Then I have created an offer student of the publication proposal of the submission of the proposal titled "Really interesting proposal"
 
 
-#  Scenario: Student is offered for an existing proposal created by a teacher
-#    Given there is an existing proposal with title "Really interesting proposal"
-#    And there is an existing submission of the proposal titled "Really interesting proposal"
-#    And there is an existing publication of the proposal titled "Really interesting proposal"
-#    When I offer as student to a publication proposal with title "Really interesting project"
-#    And Student "other student" has offered for proposal with title "Really interesting proposal"
-#    Then I have created an other offer student of the publication proposal of the submission of the proposal titled "Really interesting project"
-
+  Scenario: Student is offered for an existing proposal created by a teacher with a previous offer student
+    Given there is an existing proposal with title "Really interesting proposal"
+    And there is an existing submission of the proposal titled "Really interesting proposal"
+    And there is an existing publication of the proposal titled "Really interesting proposal"
+    When I offer as student to a publication proposal with title "Really interesting proposal"
+    When I offer as student to a publication proposal with title "Really interesting proposal"
+    Then I have two offer student created of the publication proposal of the submission of the proposal titled "Really interesting proposal"
 
   Scenario: Student is offered for an unpublished proposal created by a teacher
     Given there is an existing proposal with title "Really interesting proposal"

@@ -459,6 +459,35 @@ public class MyStepdefs {
                 .accept(MediaType.APPLICATION_JSON));
     }
 
+    @Then("^I have two offer student created of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
+    public void iHaveTwoOfferStudentCreatedOfThePublicationProposalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String proposalPublicationUri = JsonPath.read(response, "$._links.target.href");
+
+        result = mockMvc.perform(get(proposalPublicationUri).
+                accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andDo(print())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        String interestedStudents = JsonPath.read(response, "$._links.interestedStudents.href");
+
+        result = mockMvc.perform(get(interestedStudents)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$._embedded.studentOffers", hasSize(2)));
+    }
+
     @When("^I submit an unexisting proposal$")
     public void iSubmitAnUnexistingProposal() throws Throwable {
         String message = String.format(
