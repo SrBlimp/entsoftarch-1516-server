@@ -515,7 +515,42 @@ public class MyStepdefs {
 
     @Then("^I have a registered proposal titled \"([^\"]*)\"$")
     public void iHaveARegisteredProposalTitled(String title) throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
 
+        String registersUri = JsonPath.read(response, "$._links.registers.href");
+
+        result = mockMvc.perform(get(registersUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        String publishesUri = JsonPath.read(response, "$._links.publishes.href");
+
+        result = mockMvc.perform(get(publishesUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        String submitsUri = JsonPath.read(response, "$._links.submits.href");
+
+        result = mockMvc.perform(get(submitsUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(title)));
     }
 
 }
