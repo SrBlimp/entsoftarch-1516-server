@@ -22,7 +22,8 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a submitted proposal but wrong status" is "DRAFT"
 
   Scenario: Publish a submitted proposal
-    Given there is an existing proposal with title "Publish a submitted proposal"
+    Given I login as "coordinator" with password "password"
+    And there is an existing proposal with title "Publish a submitted proposal"
     And there is an existing submission of the proposal titled "Publish a submitted proposal"
     And the status of the proposal titled "Publish a submitted proposal" is "SUBMITTED"
     And there is not a publication of the submission of the proposal titled "Publish a submitted proposal"
@@ -31,7 +32,8 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a submitted proposal" is "PUBLISHED"
 
   Scenario: Publish a submitted proposal but wrong status "PUBLISHED"
-    Given there is an existing proposal with title "Publish a submitted proposal but wrong status"
+    Given I login as "coordinator" with password "password"
+    And there is an existing proposal with title "Publish a submitted proposal but wrong status"
     And there is an existing submission of the proposal titled "Publish a submitted proposal but wrong status"
     And the status of the proposal titled "Publish a submitted proposal but wrong status" is set to "PUBLISHED"
     When I publish the proposal with title "Publish a submitted proposal but wrong status"
@@ -39,7 +41,8 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a submitted proposal but wrong status" is "PUBLISHED"
 
   Scenario: Publish a published proposal
-    Given there is an existing proposal with title "Publish a published proposal"
+    Given I login as "coordinator" with password "password"
+    And there is an existing proposal with title "Publish a published proposal"
     And there is an existing submission of the proposal titled "Publish a published proposal"
     And there is an existing publication of the proposal titled "Publish a published proposal"
     And the status of the proposal titled "Publish a published proposal" is "PUBLISHED"
@@ -48,8 +51,8 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a published proposal" is "PUBLISHED"
 
   Scenario: Comment publish proposal
-    Given there is an existing proposal with title "Comment publish proposal"
-    And I login as "professor1" with password "password"
+    Given I login as "coordinator" with password "password"
+    And there is an existing proposal with title "Comment publish proposal"
     And there is an existing submission of the proposal titled "Comment publish proposal"
     And there is not a publication of the submission of the proposal titled "Comment publish proposal"
     When I publish the proposal with title "Comment publish proposal"
