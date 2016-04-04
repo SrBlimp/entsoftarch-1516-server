@@ -4,7 +4,8 @@ Feature: Publish proposal
   I want review and make public the proposal
 
   Scenario: Publish an un-submitted proposal
-    Given there is an existing proposal with title "Publish a draft proposal"
+    Given I login as "coordinator" with password "password"
+    And there is an existing proposal with title "Publish a draft proposal"
     And there is not a submission of the proposal titled "Publish a draft proposal"
     And the status of the proposal titled "Publish a draft proposal" is "DRAFT"
     When I publish an un-existing submission
