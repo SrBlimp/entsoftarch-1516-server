@@ -17,6 +17,6 @@ import java.util.List;
 @RepositoryRestResource
 public interface ProposalRegistrationRepository extends PagingAndSortingRepository<ProposalRegistration, Long> {
 
-    List<ProposalRegistration> findbyRegister(ProposalPublication proposalPublication);
+    List<ProposalRegistration> findByRegisters(ProposalPublication proposalPublication);
 }
 

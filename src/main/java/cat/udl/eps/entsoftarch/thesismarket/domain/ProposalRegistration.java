@@ -30,6 +30,7 @@ public class ProposalRegistration extends Event {
     @JsonIgnore
     private ProjectDeposit depositedBy;
 
+
     public Coordinator getAgent() {return agent;}
 
     public void setAgent(Coordinator agent){this.agent = agent;}
@@ -38,6 +39,7 @@ public class ProposalRegistration extends Event {
 
     public void setRegister(ProposalPublication proposalPublication){ this.registers = proposalPublication;}
 
+    @Nullable
     public ProjectDeposit getDepositedBy(){return depositedBy;}
 
     public  void setDepositedBy(ProjectDeposit projectDeposit){ this.depositedBy = projectDeposit;}
