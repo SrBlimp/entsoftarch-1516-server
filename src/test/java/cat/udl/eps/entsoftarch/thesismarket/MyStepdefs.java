@@ -5,7 +5,6 @@ import cat.udl.eps.entsoftarch.thesismarket.config.MailTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import com.jayway.jsonpath.JsonPath;
-import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -168,6 +167,18 @@ public class MyStepdefs {
         studentRepository.save(std);
     }
 
+    @And("^the student of the proposal titled \"([^\"]*)\" is not null$")
+    public void theStudentOfTheProposalTitledIsNotNull(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertNotNull(proposal.getStudents());
+    }
+
+    @And("^the director of the proposal titled \"([^\"]*)\" is not null$")
+    public void theDirectorOfTheProposalTitledIsNotNull(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertNotNull(proposal.getDirector());
+    }
+
     @When("^I submit the proposal with title \"([^\"]*)\"$")
     public void iSubmitTheProposalWithTitle(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -230,27 +241,7 @@ public class MyStepdefs {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword))
-                .accept(MediaType.APPLICATION_JSON));
-
-    }
-
-    @When("^I assign a existing user to the published proposal titled \"([^\"]*)\"$")
-    public void iAssignExistingUsertoProposalTitled(String title) throws Throwable {
-        /*
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalWithdrawal proposalWithdrawal = new ProposalWithdrawal();
-        proposalWithdrawal.setWithdraws(proposalSubmission);
-
-        String message = String.format(
-                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
-
-        result = mockMvc.perform(post("/proposalWithdrawals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(message)
-                .accept(MediaType.APPLICATION_JSON));
-        */
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
@@ -316,6 +307,46 @@ public class MyStepdefs {
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
     }
+
+    @When("^I register published proposal titled \"([^\"]*)\"$")
+    public void iRegisterPublishedProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication =  proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+        ProposalRegistration proposalRegistration = new ProposalRegistration();
+        proposalRegistration.setRegister(proposalPublication);
+
+        String message = String.format(
+                "{ \"register\": \"proposalPublications/%s\" }", proposalRegistration.getId());
+
+        result = mockMvc.perform(post("/proposalRegister")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("^I register un-published proposal$")
+    public void iRegisterUnPublishedProposal() throws Throwable {
+        String message = String.format(
+                "{ \"register\": \"proposalPublications/%s\" }", 101010);
+
+        result = mockMvc.perform(post("/proposalRegister")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("^I register un-assigned proposal$")
+    public void iRegisterUnAssignedProposal() throws Throwable {
+        String message = String.format(
+                "{ \"register\": \"proposalPublications/%s\" }", 111111);
+
+        result = mockMvc.perform(post("/proposalRegister")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
 
     @When("^I assign a existing user with id \"([^\"]*)\" to the published proposal titled \"([^\"]*)\"$")
     public void iAssignExistingUserToProposalTitled(String id, String title) throws Throwable {
@@ -685,36 +716,5 @@ public class MyStepdefs {
                 .andReturn().getResponse().getContentAsString();
 
     }
-
-    @And("^the student of the proposal titled \"([^\"]*)\" is not null$")
-    public void theStudentOfTheProposalTitledIsNotNull(String title) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        assertNotNull(proposal.getStudents());
-    }
-
-    @And("^the director of the proposal titled \"([^\"]*)\" is not null$")
-    public void theDirectorOfTheProposalTitledIsNotNull(String title) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        assertNotNull(proposal.getDirector());
-    }
-
-    /*FALTA ARREGLAR - FALTA RELLENAR PROPOSAL REGISTRATION...*/
-    @When("^I register published proposal titled \"([^\"]*)\"$")
-    public void iRegisterPublishedProposalTitled(String title) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalPublication proposalPublication =  proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
-        ProposalRegistration proposalRegistration = new ProposalRegistration();
-        proposalRegistration.setRegister(proposalPublication);
-
-        String message = String.format(
-                "{ \"register\": \"proposalPublications/%s\" }", proposalRegistration.getId());
-
-        result = mockMvc.perform(post("/proposalRegister")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(message)
-                .accept(MediaType.APPLICATION_JSON));
-    }
-
 }
 
