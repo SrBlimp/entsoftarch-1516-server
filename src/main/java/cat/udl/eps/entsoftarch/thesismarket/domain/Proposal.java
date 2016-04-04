@@ -19,6 +19,7 @@ public class Proposal {
     public enum Status { DRAFT, SUBMITTED, PUBLISHED, ASSIGNED, REGISTERED, DEPOSITED }
 
     @NotBlank(message = "Title cannot be blank")
+
     private String title;
     private String description;
     private String degree;
