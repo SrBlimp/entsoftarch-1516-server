@@ -403,16 +403,6 @@ public class MyStepdefs {
 
 
     @When("^I edit the proposal title with \"([^\"]*)\"$")
-    public void iEditTheProposalTitleWith(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        //Cal feru i implementar el test!
-        Proposal proposal = new Proposal();
-
-        throw new PendingException();
-    }
-
-
-    @When("^I edit the proposal title with \"([^\"]*)\"$")
     public void iEditTheProposalTitleWith(String title) throws Throwable {
         String message = String.format(
                 "{ \"title\": \"%s\" }", title);
@@ -538,64 +528,6 @@ public class MyStepdefs {
 
     @When("^I edit the proposal with title \"([^\"]*)\" title with \"([^\"]*)\"$")
     public void iEditTheProposalWithTitleTitleWith(String title, String newTitle) throws Throwable {
-        //NOT SHURE
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        proposal.setTitle(newTitle);
-        proposalRepository.save(proposal);
-    }
-
-    @Given("^there isn't any proposal$")
-    public void thereIsnTAnyProposal() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
-
-    @Then("^I have an error$")
-    public void iHaveAnError() throws Throwable {
-        // HAVE TO THROW AN EXCEPTION OR SHOW AN ERROR MESSAGE
-        throw new PendingException();
-    }
-
-    @When("^I edit the proposal title with \"([^\"]*)\"$")
-    public void iEdItTheProposalTitleWith(String newTitle) throws Throwable {
-
-        //proposal.setTitle(newTitle);
-        //proposalRepository.save(proposal);
-    }
-
-    @When("^I edit the proposal with title \"([^\"]*)\" title with \"([^\"]*)\"$")
-    public void iEditTheProposalWithTitleTitleWith(String title, String newTitle) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        proposal.setTitle(newTitle);
-        proposalRepository.save(proposal);
-    }
-
-    @Given("^there isn't any proposal$")
-    public void thereIsnTAnyProposal() throws Throwable {
-        proposalRepository.deleteAll();
-    }
-
-    @Then("^I have edited the proposal with title \"([^\"]*)\"$")
-    public void iHaveEditedTheProposalWithTitle(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
-
-    @Then("^I have an error$")
-    public void iHaveAnError() throws Throwable {
-        // HAVE TO THROW AN EXCEPTION OR SHOW AN ERROR MESSAGE
-        throw new PendingException();
-    }
-
-    @When("^I edit the proposal title with \"([^\"]*)\"$")
-    public void iEdItTheProposalTitleWith(String newTitle) throws Throwable {
-
-        //proposal.setTitle(newTitle);
-        //proposalRepository.save(proposal);
-    }
-
-    @When("^I edit the proposal with title \"([^\"]*)\" title with \"([^\"]*)\"$")
-    public void iEditTheProposalWithTitleTitleWith(String title, String newTitle) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         proposal.setTitle(newTitle);
         proposalRepository.save(proposal);
@@ -605,6 +537,12 @@ public class MyStepdefs {
     public void thereIsnTAnyProposal() throws Throwable {
         Proposal proposal = null;
         proposalRepository.save(proposal);
+    }
+
+    @Then("^I have edited the proposal \"([^\"]*)\" that \"([^\"]*)\" the \"([^\"]*)\" with \"([^\"]*)\" \"([^\"]*)\"$")
+    public void iHaveEditedTheProposalThatTheWith(String arg0, String arg1, String arg2, String arg3, String arg4) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
     }
 }
 
