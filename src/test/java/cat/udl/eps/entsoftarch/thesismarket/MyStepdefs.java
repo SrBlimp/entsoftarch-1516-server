@@ -11,7 +11,6 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.hibernate.annotations.common.util.impl.LoggerFactory;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +37,7 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -402,12 +402,14 @@ public class MyStepdefs {
 
 
     @When("^I edit the proposal title with \"([^\"]*)\"$")
-    public void iEditTheProposalTitleWith(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        //Cal feru i implementar el test!
-        Proposal proposal = new Proposal();
+    public void iEditTheProposalTitleWith(String title) throws Throwable {
+        String message = String.format(
+                "{ \"title\": \"%s\" }", title);
 
-        throw new PendingException();
+        result = mockMvc.perform(put("/proposals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
     }
 
 
@@ -523,19 +525,6 @@ public class MyStepdefs {
         throw new PendingException();
     }
 
-    @Then("^I have an error$")
-    public void iHaveAnError() throws Throwable {
-        // HAVE TO THROW AN EXCEPTION OR SHOW AN ERROR MESSAGE
-        throw new PendingException();
-    }
-
-    @When("^I edit the proposal title with \"([^\"]*)\"$")
-    public void iEdItTheProposalTitleWith(String newTitle) throws Throwable {
-
-        //proposal.setTitle(newTitle);
-        //proposalRepository.save(proposal);
-    }
-
     @When("^I edit the proposal with title \"([^\"]*)\" title with \"([^\"]*)\"$")
     public void iEditTheProposalWithTitleTitleWith(String title, String newTitle) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -574,6 +563,12 @@ public class MyStepdefs {
     public void thereIsnTAnyProposal() throws Throwable {
         Proposal proposal = null;
         proposalRepository.save(proposal);
+    }
+
+    @Then("^I have edited the proposal \"([^\"]*)\" that \"([^\"]*)\" the \"([^\"]*)\" with \"([^\"]*)\" \"([^\"]*)\"$")
+    public void iHaveEditedTheProposalThatTheWith(String arg0, String arg1, String arg2, String arg3, String arg4) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
     }
 }
 
