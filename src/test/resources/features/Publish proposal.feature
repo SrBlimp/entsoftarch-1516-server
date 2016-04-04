@@ -58,3 +58,11 @@ Feature: Publish proposal
     When I publish the proposal with title "Comment publish proposal"
     And I comment the proposal with title "Comment publish proposal" with a comment with text "This is a comment"
     Then I have created a comment that comments a proposal with text "This is a comment"
+
+  Scenario: Professor1 publish proposal
+    Given I login as "professor1" with password "password"
+    And there is an existing proposal with title "Professor1 publish proposal"
+    And there is an existing submission of the proposal titled "Professor1 publish proposal"
+    And there is not a publication of the submission of the proposal titled "Professor1 publish proposal"
+    When I publish the proposal with title "Professor1 publish proposal"
+    Then there is not a publication of the submission of the proposal titled "Professor1 publish proposal"
