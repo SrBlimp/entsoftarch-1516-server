@@ -13,7 +13,8 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a draft proposal" is "DRAFT"
 
   Scenario: Publish a submitted proposal but wrong status "DRAFT"
-    Given there is an existing proposal with title "Publish a submitted proposal but wrong status"
+    Given I login as "coordinator" with password "password"
+    And there is an existing proposal with title "Publish a submitted proposal but wrong status"
     And there is an existing submission of the proposal titled "Publish a submitted proposal but wrong status"
     And the status of the proposal titled "Publish a submitted proposal but wrong status" is set to "DRAFT"
     When I publish the proposal with title "Publish a submitted proposal but wrong status"
