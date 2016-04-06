@@ -28,15 +28,15 @@ Feature: Offer as student
     Then I get error 400 with message "may not be null"
       And the status of the proposal titled "Really interesting proposal" is "SUBMITTED"
 
-#  Scenario: Student is offered for an assigned proposal created by a teacher
-#    Given there is an existing proposal with title "Really interesting proposal"
-#      And there is an existing submission of the proposal titled "Really interesting proposal"
-#      And there is an existing publication of the proposal titled "Really interesting proposal"
-#      And the status of the proposal titled "Really interesting proposal" is set to "ASSIGNED"
-#    #And proposal publication with title "<string>" has been deleted
-#    When I offer as student to a publication proposal with title "Really interesting proposal"
-#    Then I get error 500 with message "Invalid proposal status 'ASSIGNED', should be 'PUBLISHED'"
-#      And the status of the proposal titled "Really interesting proposal" is "ASSIGNED"
+  Scenario: Student is offered for an assigned proposal created by a teacher
+    Given there is an existing proposal with title "Really interesting proposal"
+      And there is an existing submission of the proposal titled "Really interesting proposal"
+      And there is an existing publication of the proposal titled "Really interesting proposal"
+      And the status of the proposal titled "Really interesting proposal" is set to "ASSIGNED"
+    #And proposal publication with title "<string>" has been deleted
+    When I offer as student to a publication proposal with title "Really interesting proposal"
+    Then I get error 500 with message "Invalid proposal status 'ASSIGNED', should be 'PUBLISHED'"
+      And the status of the proposal titled "Really interesting proposal" is "ASSIGNED"
 
 
   #removed?
