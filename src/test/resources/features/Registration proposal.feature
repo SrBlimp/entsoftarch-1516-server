@@ -7,7 +7,7 @@ Feature: Register proposal
     Given there is an existing proposal with title "Register my proposal"
       And the status of the proposal titled "Register my proposal" is set to "ASSIGNED"
       And the student of the proposal titled "Register my proposal" is not null
-      And the director of the proposal titled "Register my proposal" is not null
+      And the director of the proposal titled "Register my proposal" is set to "professor1"
     When I register published proposal titled "Register my proposal"
     Then I have a registered proposal titled "Register my proposal"
       And the status of the proposal titled "Register my proposal" is "REGISTERED"
@@ -16,12 +16,12 @@ Feature: Register proposal
     Given there is an existing proposal with title "Register my draft proposal"
       And the status of the proposal titled "Register my draft proposal" is set to "DRAFT"
     When I register un-published proposal
-    Then I get error 500 with message "Invalid status proposal 'DRAFT', should be 'ASSIGNED'"
-      And the status of the proposal titled "Register my proposal" is "DRAFT"
+    Then I get error 400 with message "may not be null"
+      And the status of the proposal titled "Register my draft proposal" is "DRAFT"
 
   Scenario: Register un-assigned proposal
     Given there is an existing proposal with title "Register my un-assigned proposal"
       And the status of the proposal titled "Register my un-assigned proposal" is set to "PUBLISHED"
     When I register un-assigned proposal
-    Then I get error 500 with message "Invalid status proposal 'PUBLISHED', should be 'ASSIGNED'"
+    Then I get error 400 with message "may not be null"
       And the status of the proposal titled "Register my un-assigned proposal" is "PUBLISHED"
