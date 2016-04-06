@@ -317,9 +317,9 @@ public class MyStepdefs {
         proposalRegistration.setRegister(proposalPublication);
 
         String message = String.format(
-                "{ \"register\": \"proposalPublications/%s\" }", proposalRegistration.getId());
+                "{ \"registers\": \"proposalPublications/%s\" }", proposalRegistration.getId());
 
-        result = mockMvc.perform(post("/proposalRegister")
+        result = mockMvc.perform(post("/proposalRegistrations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
@@ -328,9 +328,9 @@ public class MyStepdefs {
     @When("^I register un-published proposal$")
     public void iRegisterUnPublishedProposal() throws Throwable {
         String message = String.format(
-                "{ \"register\": \"proposalPublications/%s\" }", 101010);
+                "{ \"registers\": \"proposalPublications/%s\" }", 101010);
 
-        result = mockMvc.perform(post("/proposalRegister")
+        result = mockMvc.perform(post("/proposalRegistrations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
@@ -339,9 +339,9 @@ public class MyStepdefs {
     @When("^I register un-assigned proposal$")
     public void iRegisterUnAssignedProposal() throws Throwable {
         String message = String.format(
-                "{ \"register\": \"proposalPublications/%s\" }", 111111);
+                "{ \"registers\": \"proposalPublications/%s\" }", 111111);
 
-        result = mockMvc.perform(post("/proposalRegister")
+        result = mockMvc.perform(post("/proposalRegistrations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
