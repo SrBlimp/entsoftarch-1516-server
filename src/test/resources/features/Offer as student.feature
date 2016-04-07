@@ -39,6 +39,16 @@ Feature: Offer as student
       And the status of the proposal titled "Really interesting proposal" is "ASSIGNED"
 
 
+  #Scenario: Student is offered two times for an existing proposal created by teacher
+  Scenario: Student is offered two times for a same existing proposal created by teacher
+    Given there is an existing proposal with title "Really interesting proposal"
+      And there is an existing submission of the proposal titled "Really interesting proposal"
+      And there is an existing publication of the proposal titled "Really interesting proposal"
+    When I offer as student with name "alumno1" to a publication proposal with title "Really interesting proposal"
+      And I offer as student with name "alumno1" to a publication proposal with title "Really interesting proposal"
+    Then I get error 500 with message "Repeated StudentOffer"
+    #  And I have created a unique offer student of the publication proposal of the submission of the proposal titled "Really interesting proposal"
+
   #removed?
 
 #   Scenario: Student is offered for an existing proposal created by teacher, without enought credits
