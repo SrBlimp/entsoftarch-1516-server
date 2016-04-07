@@ -53,10 +53,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/comments*/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/comments*/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/comments*/**").authenticated()
+                //CreateProposal
+                .antMatchers(HttpMethod.PUT, "/proposals*/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/proposals*/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/proposals*/**").authenticated()
+                .antMatchers(HttpMethod.PATCH, "/proposals*/**").authenticated()
+                //ProposalSubmission
                 .antMatchers(HttpMethod.POST, "/proposalSubmissions*/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/proposalSubmissions*/**").authenticated()
                 .antMatchers(HttpMethod.PUT, "/proposalSubmissions*/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/proposalSubmissions*/**").authenticated()
+                //CreateProposal
+                .antMatchers(HttpMethod.PUT, "/proposals*/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/proposals*/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/proposals*/**").authenticated()
+                .antMatchers(HttpMethod.PATCH, "/proposals*/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
             .httpBasic()

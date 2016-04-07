@@ -1,13 +1,11 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
+import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import com.jayway.jsonpath.JsonPath;
+import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -30,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -386,7 +385,9 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposals")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+        
     }
 
     @Then("^new proposal with title \"([^\"]*)\"$")
@@ -478,6 +479,30 @@ public class MyStepdefs {
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
+    }
+
+    @Then("^check proposal status is \"([^\"]*)\"$")
+    public void checkProposalStatusIs(String status) throws Throwable {
+        result.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.status", is(status)));
+    }
+
+    @Then("^check proposal creator is user logged$")
+    public void checkProposalCreatorIsUserLogged() throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String creatorUri = JsonPath.read(response, "$._links.creator.href");
+
+        result = mockMvc.perform(get(creatorUri).
+                accept(MediaType.APPLICATION_JSON));
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
     }
 }
 
