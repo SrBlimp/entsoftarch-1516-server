@@ -11,7 +11,6 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.hibernate.annotations.common.util.impl.LoggerFactory;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -407,7 +406,7 @@ public class MyStepdefs {
         String message = String.format(
                 "{ \"title\": \"%s\" }", title);
 
-        result = mockMvc.perform(put("/proposals")
+        result = mockMvc.perform(put("/proposals/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
@@ -520,29 +519,17 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
     }
 
-    @Then("^I have edited the \"([^\"]*)\" that \"([^\"]*)\" the \"([^\"]*)\" with \"([^\"]*)\" \"([^\"]*)\"$")
-    public void iHaveEditedTheThatTheWith(String arg0, String arg1, String arg2, String arg3, String arg4) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
-
-    @When("^I edit the proposal with title \"([^\"]*)\" title with \"([^\"]*)\"$")
-    public void iEditTheProposalWithTitleTitleWith(String title, String newTitle) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        proposal.setTitle(newTitle);
-        proposalRepository.save(proposal);
-    }
-
     @Given("^there isn't any proposal$")
     public void thereIsnTAnyProposal() throws Throwable {
-        Proposal proposal = null;
-        proposalRepository.save(proposal);
+        proposalRepository.deleteAll();
     }
 
-    @Then("^I have edited the proposal \"([^\"]*)\" that \"([^\"]*)\" the \"([^\"]*)\" with \"([^\"]*)\" \"([^\"]*)\"$")
-    public void iHaveEditedTheProposalThatTheWith(String arg0, String arg1, String arg2, String arg3, String arg4) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    @Then("^I have edited the proposal with title \"([^\"]*)\"$")
+    public void iHaveEditedTheProposalWithTitle(String newTitle) throws Throwable {
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(newTitle)));
     }
 }
 
