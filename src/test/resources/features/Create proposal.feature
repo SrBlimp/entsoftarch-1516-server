@@ -4,9 +4,12 @@ Feature: Create proposal
   I want to check the correct creation
 
   Scenario: Create proposal
-    Given I login as "professor1" with password "password"
+    Given I login as "student1" with password "password"
     When I create the proposal with title "Create new proposal"
     Then new proposal with title "Create new proposal"
+    Then check proposal status is "DRAFT"
+    Then check proposal creator is user logged
+
 
   Scenario: Create proposal and already created with title is "Proposal"
     Given I login as "professor1" with password "password"
