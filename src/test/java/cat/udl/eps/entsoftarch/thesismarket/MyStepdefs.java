@@ -52,6 +52,7 @@ public class MyStepdefs {
     @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
     @Autowired private ProposalPublicationRepository proposalPublicationRepository;
     @Autowired private ProponentRepository proponentRepository;
+    @Autowired private StudentRepository studentRepository;
 
     private String currentUsername;
     private String currentPassword;
@@ -486,6 +487,28 @@ public class MyStepdefs {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$._embedded.studentOffers", hasSize(2)));
+    }
+
+    @When("^I offer as student with name \"([^\"]*)\" to a publication proposal with title \"([^\"]*)\"$")
+    public void iOfferAsStudentWithNameToAPublicationProposalWithTitle(String studentname, String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+
+        Student student = new Student();
+        student.setUsername(studentname);
+
+        studentRepository.save(student);
+
+
+        String message = String.format(
+                "{ \"target\": \"proposalPublications/%s\", \"agent\": \"students/%s\"}",
+                proposalPublication.getId() ,student);
+
+        result = mockMvc.perform(post("/studentOffers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)).andDo(print());
     }
 
     @When("^I submit an unexisting proposal$")
