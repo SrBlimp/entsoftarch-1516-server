@@ -508,7 +508,7 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/studentOffers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON)).andDo(print());
+                .accept(MediaType.APPLICATION_JSON));
     }
 
     @When("^I submit an unexisting proposal$")
