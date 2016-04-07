@@ -125,6 +125,11 @@ public class MyStepdefs {
         assertThat(proposal.getStatus(), is(status));
     }
 
+    @And("^there is not an existing proposal titled \"([^\"]*)\"$")
+    public void thereIsNotAnExistingProposalTitled(String title) throws Throwable {
+        assertTrue(proposalRepository.findByTitleContaining(title).isEmpty());
+    }
+
     @And("^there is not a submission of the proposal titled \"([^\"]*)\"$")
     public void thereIsNotASubmissionOfTheProposalTitled(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -172,7 +177,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalPublications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I withdraw the submission of the proposal titled \"([^\"]*)\"$")
@@ -251,6 +257,18 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
+    @When("^I publish an un-existing proposal$")
+    public void iPublishAnUnexistingProposal() throws Throwable {
+        String message = String.format(
+                "{ \"submits\": \"proposals/%s\" }", 101929383);
+
+        result = mockMvc.perform(post("/proposalPublications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
     @When("^I publish an un-existing submission$")
     public void iPublishAnUnexistingSubmission() throws Throwable {
         String message = String.format(
@@ -259,7 +277,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalPublications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")

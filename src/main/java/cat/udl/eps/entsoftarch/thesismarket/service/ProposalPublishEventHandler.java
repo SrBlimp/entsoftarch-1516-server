@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ public class ProposalPublishEventHandler {
 
     @HandleBeforeCreate
     @Transactional
+    @PreAuthorize("hasRole('COORDINATOR')")
     public void handleProposalPublicationPreCreated(ProposalPublication proposalPublication) {
         logger.info("Before creating: {}", proposalPublication.toString());
 
