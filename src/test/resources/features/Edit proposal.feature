@@ -4,16 +4,16 @@ Feature: Edit proposal
   I want to edit a proposal
 
   Scenario: Edit existing proposal
-    Given there is an existing proposal with title "Really interesting project"
-    When I edit the proposal title with "Not interesting project"
+    Given I create the proposal with title "Very interesting project"
+    When I edit the previous proposal title with "Not interesting project"
     Then I have edited the proposal with title "Not interesting project"
 
   Scenario: Edit existing proposal with new title null
-    Given there is an existing proposal with title "Really interesting project"
-    When I edit the proposal title with ""
+    Given I create the proposal with title "Very interesting project"
+    When I edit the previous proposal title with ""
     Then I get error 400 with message "Title cannot be blank"
 
   Scenario: Edit non-existent proposal
     Given there isn't any proposal
-    When I edit the proposal title with "NewProject"
+    When I edit the previous proposal title with "NewProject"
     Then new proposal with title "NewProject"
