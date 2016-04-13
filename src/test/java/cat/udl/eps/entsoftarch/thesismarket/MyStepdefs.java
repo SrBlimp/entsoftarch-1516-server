@@ -91,12 +91,6 @@ public class MyStepdefs {
         proposalRepository.save(proposal);
     }
 
-    @Given("^there is an existing proposal with title \"([^\"]*)\"$")
-    public void thereIsAnExistingProposalWithTitle(String title) throws Throwable {
-        Proposal proposal = new Proposal();
-        proposal.setTitle(title);
-        proposalRepository.save(proposal);
-    }
 
     @And("^there is an existing submission of the proposal titled \"([^\"]*)\"$")
     public void thereIsAnExistingSubmissionOfTheProposalTitled(String title) throws Throwable {
@@ -401,14 +395,17 @@ public class MyStepdefs {
     }
 
 
-    @When("^I edit the proposal title with \"([^\"]*)\"$")
-    public void iEditTheProposalTitleWith(String title) throws Throwable {
-        String message = String.format(
-                "{ \"title\": \"%s\" }", title);
+    @When("^I edit the previous proposal title with \"([^\"]*)\"$")
+    public void iEditThePreviousProposalTitleWith(String title) throws Throwable {
+
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
 
         result = mockMvc.perform(put("/proposals/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(message)
+                .content(response)
                 .accept(MediaType.APPLICATION_JSON));
     }
 
