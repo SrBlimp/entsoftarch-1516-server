@@ -399,10 +399,14 @@ public class MyStepdefs {
         String message = String.format(
                 "{ \"target\": \"proposalPublications/%s\" }", proposalPublication.getId());
 
-        result = mockMvc.perform(post("/studentOffers")
+        MockHttpServletRequestBuilder postRequest = post("/studentOffers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON);
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
     }
 
     @Then("^I have created an offer student of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
@@ -460,7 +464,7 @@ public class MyStepdefs {
                 .accept(MediaType.APPLICATION_JSON));
     }
 
-    @Then("^I have two offer student created of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
+    @Then("^I have two offer student more created of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
     public void iHaveTwoOfferStudentCreatedOfThePublicationProposalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
         String response = result
                 .andDo(print())
@@ -486,7 +490,7 @@ public class MyStepdefs {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$._embedded.studentOffers", hasSize(2)));
+                .andExpect(jsonPath("$._embedded.studentOffers", hasSize(3)));
     }
 
     @When("^I offer as student with name \"([^\"]*)\" to a publication proposal with title \"([^\"]*)\"$")
@@ -505,10 +509,15 @@ public class MyStepdefs {
                 "{ \"target\": \"proposalPublications/%s\", \"agent\": \"students/%s\"}",
                 proposalPublication.getId() ,student);
 
-        result = mockMvc.perform(post("/studentOffers")
+        MockHttpServletRequestBuilder postRequest = post("/studentOffers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON);
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
+
     }
 
     @When("^I submit an unexisting proposal$")

@@ -25,16 +25,18 @@ import java.util.List;
 @RepositoryEventHandler(StudentOffer.class)
 public class StudentOfferEventHandler {
 
-    final Logger logger = LoggerFactory.getLogger(ProposalWithdrawalEventHandler.class);
+    final Logger logger = LoggerFactory.getLogger(StudentOfferEventHandler.class);
 
     @Autowired
     private StudentOfferRepository studentOfferRepository;
+    @Autowired
     private StudentRepository studentRepository;
-//    @Autowired private ProponentRepository proponentRepository;
 
     @HandleBeforeCreate
     @Transactional
-//    @PreAuthorize("#proposalWithdrawal.withdraws.submits.creator.username == authentication.name")
+    //@PreAuthorize("#studentOffer.agent == authentication.name")
+    @PreAuthorize("hasRole('STUDENT')")
+
 
     public void handleProposalStudentOfferPreCreate(StudentOffer studentOffer) {
         logger.info("Before creating: {}", studentOffer.toString());
@@ -60,15 +62,12 @@ public class StudentOfferEventHandler {
         Assert.isTrue(!denied,
                 "Repeated StudentOffer");
 
+/*
 
-        /*
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Proponent proponent = proponentRepository.findOne(username);
-        proposalWithdrawal.setAgent(proponent);
+        Student student = studentRepository.findOne(username);
+        studentOffer.setAgent(student);*/
 
-        proposal.setStatus(Proposal.Status.DRAFT);
-        proposalRepository.save(proposal);
-        */
     }
 
 }
