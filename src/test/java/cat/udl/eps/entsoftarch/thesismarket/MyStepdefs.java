@@ -91,6 +91,12 @@ public class MyStepdefs {
         proposalRepository.save(proposal);
     }
 
+    @Given("^there is an existing proposal with title \"([^\"]*)\"$")
+    public void thereIsAnExistingProposalWithTitle(String title) throws Throwable {
+        Proposal proposal = new Proposal();
+        proposal.setTitle(title);
+        proposalRepository.save(proposal);
+    }
 
     @And("^there is an existing submission of the proposal titled \"([^\"]*)\"$")
     public void thereIsAnExistingSubmissionOfTheProposalTitled(String title) throws Throwable {
@@ -117,11 +123,6 @@ public class MyStepdefs {
     public void theStatusOfTheProposalTitledIs(String title, Proposal.Status status) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         assertThat(proposal.getStatus(), is(status));
-    }
-
-    @And("^there is not an existing proposal titled \"([^\"]*)\"$")
-    public void thereIsNotAnExistingProposalTitled(String title) throws Throwable {
-        assertTrue(proposalRepository.findByTitleContaining(title).isEmpty());
     }
 
     @And("^there is not a submission of the proposal titled \"([^\"]*)\"$")
@@ -179,8 +180,6 @@ public class MyStepdefs {
     public void iWithdrawTheSubmissionOfTheProposalTitled(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalWithdrawal proposalWithdrawal = new ProposalWithdrawal();
-        proposalWithdrawal.setWithdraws(proposalSubmission);
 
         String message = String.format(
                 "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
@@ -245,18 +244,6 @@ public class MyStepdefs {
                 "{ \"comments\": \"proposalPublications/%s\" }", 9999);
 
         result = mockMvc.perform(post("/comments")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(message)
-                .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword)));
-    }
-
-    @When("^I publish an un-existing proposal$")
-    public void iPublishAnUnexistingProposal() throws Throwable {
-        String message = String.format(
-                "{ \"submits\": \"proposals/%s\" }", 101929383);
-
-        result = mockMvc.perform(post("/proposalPublications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
