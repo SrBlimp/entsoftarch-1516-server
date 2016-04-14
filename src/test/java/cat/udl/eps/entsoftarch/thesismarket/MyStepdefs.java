@@ -5,7 +5,6 @@ import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import com.jayway.jsonpath.JsonPath;
-import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -28,16 +27,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -123,6 +116,11 @@ public class MyStepdefs {
     public void theStatusOfTheProposalTitledIs(String title, Proposal.Status status) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         assertThat(proposal.getStatus(), is(status));
+    }
+
+    @And("^there is not an existing proposal titled \"([^\"]*)\"$")
+    public void thereIsNotAnExistingProposalTitled(String title) throws Throwable {
+        assertTrue(proposalRepository.findByTitleContaining(title).isEmpty());
     }
 
     @And("^there is not a submission of the proposal titled \"([^\"]*)\"$")
@@ -250,6 +248,18 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
+    @When("^I publish an un-existing proposal$")
+    public void iPublishAnUnexistingProposal() throws Throwable {
+        String message = String.format(
+                "{ \"submits\": \"proposals/%s\" }", 101929383);
+
+        result = mockMvc.perform(post("/proposalPublications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
     @When("^I publish an un-existing submission$")
     public void iPublishAnUnexistingSubmission() throws Throwable {
         String message = String.format(
@@ -262,24 +272,23 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
-    @Then("^I have created a \"([^\"]*)\" that \"([^\"]*)\" a \"([^\"]*)\" with \"([^\"]*)\" \"([^\"]*)\"$")
-    public void iHaveCreatedAThatAWith(String newType, String relation, String relatedType, String relatedTypeProperty, String propertyValue) throws Throwable {
+    @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")
+    public void iHaveCreatedAProposalSubmissionThatSubmitsAProposalWithTitle(String title) throws Throwable {
+
         String response = result
-                .andExpect(status().isCreated())
                 .andDo(print())
-                .andExpect(jsonPath("$._links." + newType).exists())
+                .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        String relationUri = JsonPath.read(response, "$._links." + relation + ".href");
+        String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
-        result = mockMvc.perform(get(relationUri)
+        result = mockMvc.perform(get(submitsUri)
                 .accept(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$._links." + relatedType).exists())
-                .andExpect(jsonPath("$." + relatedTypeProperty, is(propertyValue)));
+                .andExpect(jsonPath("$.title", is(title)));
     }
 
     @Then("^I have created a withdrawal of the submission of the proposal titled \"([^\"]*)\"$")
@@ -370,7 +379,6 @@ public class MyStepdefs {
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
-
     }
 
     @Then("^new proposal with title \"([^\"]*)\"$")
@@ -380,22 +388,6 @@ public class MyStepdefs {
                 .andDo(print())
                 .andExpect(jsonPath("$.title", is(title)));
     }
-
-
-    @When("^I edit the previous proposal title with \"([^\"]*)\"$")
-    public void iEditThePreviousProposalTitleWith(String title) throws Throwable {
-
-        String response = result
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-
-        result = mockMvc.perform(put("/proposals/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(response)
-                .accept(MediaType.APPLICATION_JSON));
-    }
-
 
     @When("^I offer as student to a publication proposal with title \"([^\"]*)\"$")
     public void iOfferAsStudentToAPublicationProposalWithTitle(String title) throws Throwable {
@@ -509,11 +501,11 @@ public class MyStepdefs {
         String message = String.format(
                 "{ \"title\" : \"%s\"}", newTitle);
 
-
         result = mockMvc.perform(put("/proposals/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @Given("^there isn't any proposal$")
