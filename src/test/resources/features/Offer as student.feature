@@ -70,3 +70,12 @@ Feature: Offer as student
     Then I get error 401 with message "Bad credentials"
       And the status of the proposal titled "Really interesting proposal" is "PUBLISHED"
 
+  Scenario: Offer as student for a proposal by a different user
+    Given I login as "professor1" with password "password"
+      And there is an existing proposal with title "Really interesting proposal"
+      And there is an existing submission of the proposal titled "Really interesting proposal"
+      And there is an existing publication of the proposal titled "Really interesting proposal"
+      And the status of the proposal titled "Really interesting proposal" is "PUBLISHED"
+    When I offer as student to a publication proposal with title "Really interesting proposal"
+    Then I get error 403 with message "Access is denied"
+      And the status of the proposal titled "Really interesting proposal" is "PUBLISHED"
