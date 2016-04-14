@@ -503,6 +503,19 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
     }
 
+    @When("^I edit the proposal with title \"([^\"]*)\" with new title \"([^\"]*)\"$")
+    public void iEditTheProposalTitleWith(String title, String newTitle) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        String message = String.format(
+                "{ \"title\" : \"%s\"}", newTitle);
+
+
+        result = mockMvc.perform(put("/proposals/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
     @Given("^there isn't any proposal$")
     public void thereIsnTAnyProposal() throws Throwable {
         proposalRepository.deleteAll();
