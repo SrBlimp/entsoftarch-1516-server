@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -52,6 +53,7 @@ public class MyStepdefs {
     @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
     @Autowired private ProposalPublicationRepository proposalPublicationRepository;
     @Autowired private ProponentRepository proponentRepository;
+    @Autowired private StudentRepository studentRepository;
 
     private String currentUsername;
     private String currentPassword;
@@ -398,10 +400,14 @@ public class MyStepdefs {
         String message = String.format(
                 "{ \"target\": \"proposalPublications/%s\" }", proposalPublication.getId());
 
-        result = mockMvc.perform(post("/studentOffers")
+        MockHttpServletRequestBuilder postRequest = post("/studentOffers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON);
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
     }
 
     @Then("^I have created an offer student of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
@@ -457,6 +463,62 @@ public class MyStepdefs {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @Then("^I have two offer student more created of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
+    public void iHaveTwoOfferStudentCreatedOfThePublicationProposalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String proposalPublicationUri = JsonPath.read(response, "$._links.target.href");
+
+        result = mockMvc.perform(get(proposalPublicationUri).
+                accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andDo(print())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        String interestedStudents = JsonPath.read(response, "$._links.interestedStudents.href");
+
+        result = mockMvc.perform(get(interestedStudents)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$._embedded.studentOffers", hasSize(3)));
+    }
+
+    @When("^I offer as student with name \"([^\"]*)\" to a publication proposal with title \"([^\"]*)\"$")
+    public void iOfferAsStudentWithNameToAPublicationProposalWithTitle(String studentname, String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+
+        Student student = new Student();
+        student.setUsername(studentname);
+
+        studentRepository.save(student);
+
+
+        String message = String.format(
+                "{ \"target\": \"proposalPublications/%s\", \"agent\": \"students/%s\"}",
+                proposalPublication.getId() ,student);
+
+        MockHttpServletRequestBuilder postRequest = post("/studentOffers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON);
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
+
     }
 
     @When("^I submit an unexisting proposal$")

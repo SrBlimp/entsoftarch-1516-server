@@ -15,4 +15,7 @@ import java.util.List;
 @Repository
 @RepositoryRestResource
 public interface StudentOfferRepository extends PagingAndSortingRepository<StudentOffer,Long>{
+
+    public List<StudentOffer> findByAgent(Student student);
+
 }
