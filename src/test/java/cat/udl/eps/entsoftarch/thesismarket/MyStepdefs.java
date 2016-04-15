@@ -5,7 +5,6 @@ import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import com.jayway.jsonpath.JsonPath;
-import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -28,15 +27,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -184,8 +178,6 @@ public class MyStepdefs {
     public void iWithdrawTheSubmissionOfTheProposalTitled(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalWithdrawal proposalWithdrawal = new ProposalWithdrawal();
-        proposalWithdrawal.setWithdraws(proposalSubmission);
 
         String message = String.format(
                 "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
@@ -387,7 +379,6 @@ public class MyStepdefs {
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
-        
     }
 
     @Then("^new proposal with title \"([^\"]*)\"$")
@@ -397,7 +388,6 @@ public class MyStepdefs {
                 .andDo(print())
                 .andExpect(jsonPath("$.title", is(title)));
     }
-
 
     @When("^I offer as student to a publication proposal with title \"([^\"]*)\"$")
     public void iOfferAsStudentToAPublicationProposalWithTitle(String title) throws Throwable {
@@ -503,6 +493,32 @@ public class MyStepdefs {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
+    }
+
+    @When("^I edit the proposal with title \"([^\"]*)\" with new title \"([^\"]*)\"$")
+    public void iEditTheProposalTitleWith(String title, String newTitle) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        String message = String.format(
+                "{ \"title\" : \"%s\"}", newTitle);
+
+        result = mockMvc.perform(put("/proposals/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
+    @Given("^there isn't any proposal$")
+    public void thereIsnTAnyProposal() throws Throwable {
+        proposalRepository.deleteAll();
+    }
+
+    @Then("^I have edited the proposal with title \"([^\"]*)\"$")
+    public void iHaveEditedTheProposalWithTitle(String newTitle) throws Throwable {
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(newTitle)));
     }
 }
 
