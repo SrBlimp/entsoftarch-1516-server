@@ -1,4 +1,4 @@
-package cat.udl.eps.entsoftarch.thesismarket.security;
+package cat.udl.eps.entsoftarch.thesismarket.config;
 
 import cat.udl.eps.entsoftarch.thesismarket.domain.Coordinator;
 import cat.udl.eps.entsoftarch.thesismarket.domain.Professor;

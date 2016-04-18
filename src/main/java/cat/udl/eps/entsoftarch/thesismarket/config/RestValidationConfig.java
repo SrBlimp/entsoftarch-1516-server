@@ -1,4 +1,4 @@
-package cat.udl.eps.entsoftarch.thesismarket;
+package cat.udl.eps.entsoftarch.thesismarket.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
