@@ -1,6 +1,7 @@
 package cat.udl.eps.entsoftarch.thesismarket.service;
 
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
+import cat.udl.eps.entsoftarch.thesismarket.repository.CoordinatorRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import org.slf4j.Logger;
@@ -24,6 +25,8 @@ public class ProposalWithdrawalEventHandler {
 
     @Autowired private ProposalRepository proposalRepository;
     @Autowired private ProponentRepository proponentRepository;
+    @Autowired private CoordinatorRepository coordinatorRepository;
+    @Autowired private MailService mailService;
 
     @HandleBeforeCreate
     @Transactional
@@ -45,6 +48,18 @@ public class ProposalWithdrawalEventHandler {
 
         proposal.setStatus(Proposal.Status.DRAFT);
         proposalRepository.save(proposal);
+
+        String subject = "Proposal Withdrawal";
+        String message = "Dear coordinador, \n\n" +
+                "Please, be aware that the unpublished submission of the proposal \"" +
+                proposal.getTitle() + "\" by " + proponent.getUsername() + " has been withdrawn. \n\n" +
+                "Best regards, \n\n" +
+                "Thesis Market";
+
+        coordinatorRepository.findAll().forEach(
+                coordinator -> mailService.sendMessage(coordinator.getEmail(), subject, message));
+
+        //TODO: Warn also professors with role coordinator!
     }
 
     @HandleBeforeSave
