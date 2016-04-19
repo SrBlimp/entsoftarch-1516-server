@@ -1,8 +1,7 @@
 package cat.udl.eps.entsoftarch.thesismarket.config;
 
 import cat.udl.eps.entsoftarch.thesismarket.domain.Coordinator;
-import cat.udl.eps.entsoftarch.thesismarket.domain.User;
-import cat.udl.eps.entsoftarch.thesismarket.repository.UserRepository;
+import cat.udl.eps.entsoftarch.thesismarket.repository.CoordinatorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,7 +17,7 @@ import javax.inject.Inject;
 public class AuthenticationTestConfig extends GlobalAuthenticationConfigurerAdapter {
 
     @Inject UserDetailsContextMapper userDetailsContextMapper;
-    @Autowired UserRepository userRepository;
+    @Autowired CoordinatorRepository coordinatorRepository;
 
     @Override
     public void init(AuthenticationManagerBuilder auth) throws Exception {
@@ -27,9 +26,10 @@ public class AuthenticationTestConfig extends GlobalAuthenticationConfigurerAdap
                 .withUser("admin").password("password").roles("ADMIN").and()
                 .withUser("coordinator").password("password").roles("COORDINATOR");
 
-        User coordinator = new Coordinator();
+        Coordinator coordinator = new Coordinator();
         coordinator.setUsername("coordinator");
-        userRepository.save(coordinator);
+        coordinator.setEmail("coordinator@thesismarket");
+        coordinatorRepository.save(coordinator);
 
         auth
             .ldapAuthentication()
