@@ -1,9 +1,9 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
+import cat.udl.eps.entsoftarch.thesismarket.config.AuthenticationTestConfig;
+import cat.udl.eps.entsoftarch.thesismarket.config.MailTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
-import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
-import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import com.jayway.jsonpath.JsonPath;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -11,11 +11,14 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationContextLoader;
 import org.springframework.http.MediaType;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,6 +33,8 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -38,7 +43,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by http://rhizomik.net/~roberto/
  */
-@ContextConfiguration(classes = {ThesismarketApiApplication.class, WebSecurityConfig.class, AuthenticationTestConfig.class}, loader = SpringApplicationContextLoader.class)
+@ContextConfiguration(
+        classes = {ThesismarketApiApplication.class, MailTestConfig.class, AuthenticationTestConfig.class},
+        loader = SpringApplicationContextLoader.class)
 @DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -54,6 +61,7 @@ public class MyStepdefs {
     @Autowired private ProposalPublicationRepository proposalPublicationRepository;
     @Autowired private ProponentRepository proponentRepository;
     @Autowired private StudentRepository studentRepository;
+    @Autowired private JavaMailSender javaMailSender;
 
     private String currentUsername;
     private String currentPassword;
@@ -581,6 +589,16 @@ public class MyStepdefs {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.title", is(newTitle)));
+    }
+
+    @Then("^an email has been sent to \"([^\"]*)\" with subject \"([^\"]*)\" and containing \"([^\"]*)\"$")
+    public void an_email_has_been_sent_to_containing(String recipient, String subject, String bodyText) throws Throwable {
+        ArgumentCaptor<SimpleMailMessage> argument = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        verify(javaMailSender, atLeastOnce()).send(argument.capture());
+        SimpleMailMessage lastEMail = argument.getAllValues().get(argument.getAllValues().size()-1);
+        assertTrue(lastEMail.getTo()[0].equals(recipient));
+        assertTrue(lastEMail.getSubject().equals(subject));
+        assertThat(lastEMail.getText(), containsString(bodyText));
     }
 }
 
