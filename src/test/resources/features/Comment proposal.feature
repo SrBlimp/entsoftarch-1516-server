@@ -12,6 +12,7 @@ Feature: Comment proposal
     When I comment the proposal with title "Really interesting project" with a comment with text "I love this project!"
     Then I have created a comment that comments a proposal with text "I love this project!"
      And the status of the proposal titled "Really interesting project" is "PUBLISHED"
+     And an email has been sent to "proponent@thesismarket" with subject "New comment" and containing "New comment added"
 
   Scenario: Comment a published publication but wrong status "SUBMITTED"
     Given I login as "professor1" with password "password"

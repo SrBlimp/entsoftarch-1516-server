@@ -45,6 +45,17 @@ public class CommentEventHandler {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Proponent proponent = proponentRepository.findOne(username);
         comment.setAuthor(proponent);
+
+        String subject = "New comment";
+        String message = "Dear coordinador, \n\n" +
+                "Please, be aware that the unpublished submission of the proposal \"" +
+                proposal.getTitle() + "\" by " + proponent.getUsername() + " New comment added. \n\n" +
+                "Best regards, \n\n" +
+                "Thesis Market";
+
+        coordinatorRepository.findAll().forEach(
+                coordinator -> mailService.sendMessage(coordinator.getEmail(), subject, message));
+
     }
 
     @HandleBeforeSave
