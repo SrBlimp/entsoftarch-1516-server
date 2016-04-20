@@ -1,10 +1,7 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
+import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import com.jayway.jsonpath.JsonPath;
@@ -30,14 +27,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -59,6 +53,7 @@ public class MyStepdefs {
     @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
     @Autowired private ProposalPublicationRepository proposalPublicationRepository;
     @Autowired private ProponentRepository proponentRepository;
+    @Autowired private StudentRepository studentRepository;
 
     private String currentUsername;
     private String currentPassword;
@@ -125,6 +120,11 @@ public class MyStepdefs {
         assertThat(proposal.getStatus(), is(status));
     }
 
+    @And("^there is not an existing proposal titled \"([^\"]*)\"$")
+    public void thereIsNotAnExistingProposalTitled(String title) throws Throwable {
+        assertTrue(proposalRepository.findByTitleContaining(title).isEmpty());
+    }
+
     @And("^there is not a submission of the proposal titled \"([^\"]*)\"$")
     public void thereIsNotASubmissionOfTheProposalTitled(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -155,7 +155,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalSubmissions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I publish the proposal with title \"([^\"]*)\"$")
@@ -171,7 +172,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalPublications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I withdraw the submission of the proposal titled \"([^\"]*)\"$")
@@ -248,6 +250,18 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
+    @When("^I publish an un-existing proposal$")
+    public void iPublishAnUnexistingProposal() throws Throwable {
+        String message = String.format(
+                "{ \"submits\": \"proposals/%s\" }", 101929383);
+
+        result = mockMvc.perform(post("/proposalPublications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
     @When("^I publish an un-existing submission$")
     public void iPublishAnUnexistingSubmission() throws Throwable {
         String message = String.format(
@@ -256,7 +270,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalPublications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")
@@ -364,7 +379,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposals")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @Then("^new proposal with title \"([^\"]*)\"$")
@@ -375,7 +391,6 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$.title", is(title)));
     }
 
-
     @When("^I offer as student to a publication proposal with title \"([^\"]*)\"$")
     public void iOfferAsStudentToAPublicationProposalWithTitle(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -385,10 +400,14 @@ public class MyStepdefs {
         String message = String.format(
                 "{ \"target\": \"proposalPublications/%s\" }", proposalPublication.getId());
 
-        result = mockMvc.perform(post("/studentOffers")
+        MockHttpServletRequestBuilder postRequest = post("/studentOffers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON);
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
     }
 
     @Then("^I have created an offer student of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
@@ -444,6 +463,124 @@ public class MyStepdefs {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @Then("^I have two offer student more created of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
+    public void iHaveTwoOfferStudentCreatedOfThePublicationProposalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String proposalPublicationUri = JsonPath.read(response, "$._links.target.href");
+
+        result = mockMvc.perform(get(proposalPublicationUri).
+                accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andDo(print())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        String interestedStudents = JsonPath.read(response, "$._links.interestedStudents.href");
+
+        result = mockMvc.perform(get(interestedStudents)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$._embedded.studentOffers", hasSize(3)));
+    }
+
+    @When("^I offer as student with name \"([^\"]*)\" to a publication proposal with title \"([^\"]*)\"$")
+    public void iOfferAsStudentWithNameToAPublicationProposalWithTitle(String studentname, String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+
+        Student student = new Student();
+        student.setUsername(studentname);
+
+        studentRepository.save(student);
+
+
+        String message = String.format(
+                "{ \"target\": \"proposalPublications/%s\", \"agent\": \"students/%s\"}",
+                proposalPublication.getId() ,student);
+
+        MockHttpServletRequestBuilder postRequest = post("/studentOffers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON);
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
+
+    }
+
+    @When("^I submit an unexisting proposal$")
+    public void iSubmitAnUnexistingProposal() throws Throwable {
+        String message = String.format(
+                "{ \"submits\": \"proposals/%s\" }", 9999);
+
+        result = mockMvc.perform(post("/proposalSubmissions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
+    @Then("^check proposal status is \"([^\"]*)\"$")
+    public void checkProposalStatusIs(String status) throws Throwable {
+        result.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.status", is(status)));
+    }
+
+    @Then("^check proposal creator is user logged$")
+    public void checkProposalCreatorIsUserLogged() throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String creatorUri = JsonPath.read(response, "$._links.creator.href");
+
+        result = mockMvc.perform(get(creatorUri).
+                accept(MediaType.APPLICATION_JSON));
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
+    }
+
+    @When("^I edit the proposal with title \"([^\"]*)\" with new title \"([^\"]*)\"$")
+    public void iEditTheProposalTitleWith(String title, String newTitle) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        String message = String.format(
+                "{ \"title\" : \"%s\"}", newTitle);
+
+        result = mockMvc.perform(put("/proposals/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
+    @Given("^there isn't any proposal$")
+    public void thereIsnTAnyProposal() throws Throwable {
+        proposalRepository.deleteAll();
+    }
+
+    @Then("^I have edited the proposal with title \"([^\"]*)\"$")
+    public void iHaveEditedTheProposalWithTitle(String newTitle) throws Throwable {
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(newTitle)));
     }
 }
 
