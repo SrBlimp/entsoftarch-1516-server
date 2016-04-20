@@ -5,7 +5,6 @@ import cat.udl.eps.entsoftarch.thesismarket.domain.Proponent;
 import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,9 @@ public class CommentEventHandler {
     final Logger logger = LoggerFactory.getLogger(CommentEventHandler.class);
 
     @Autowired
-    private ProposalRepository proposalRepository;
-    @Autowired
     private ProponentRepository proponentRepository;
+    @Autowired
+    private MailService mailService;
 
     @HandleBeforeCreate
     @Transactional
@@ -53,8 +52,7 @@ public class CommentEventHandler {
                 "Best regards, \n\n" +
                 "Thesis Market";
 
-        coordinatorRepository.findAll().forEach(
-                coordinator -> mailService.sendMessage(coordinator.getEmail(), subject, message));
+         mailService.sendMessage(proposal.getCreator().getEmail(), subject, message);
 
     }
 
