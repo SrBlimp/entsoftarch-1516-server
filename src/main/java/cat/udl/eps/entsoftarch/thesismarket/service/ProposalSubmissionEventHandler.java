@@ -5,6 +5,7 @@ import cat.udl.eps.entsoftarch.thesismarket.domain.Proponent;
 import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalWithdrawal;
+import cat.udl.eps.entsoftarch.thesismarket.repository.CoordinatorRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import org.slf4j.Logger;
@@ -27,6 +28,8 @@ public class ProposalSubmissionEventHandler {
 
     @Autowired private ProposalRepository proposalRepository;
     @Autowired private ProponentRepository proponentRepository;
+    @Autowired private CoordinatorRepository coordinatorRepository;
+    @Autowired private MailService mailService;
 
     @HandleBeforeCreate
     @Transactional
@@ -46,6 +49,20 @@ public class ProposalSubmissionEventHandler {
 
         submits.setStatus(Proposal.Status.SUBMITTED);
         proposalRepository.save(submits);
+
+
+        String subject = "Proposal Submission";
+        String message = "Dear coordinador, \n\n" +
+                "Please, be aware that the proposal \"" +
+                submits.getTitle() + "\" by " + proponent.getUsername() + " has been submitted. \n\n" +
+                "Best regards, \n\n" +
+                "Thesis Market";
+
+        coordinatorRepository.findAll().forEach(
+                coordinator -> mailService.sendMessage(coordinator.getEmail(), subject, message));
+
+        //TODO: Warn also professors with role coordinator!
+
     }
 
 
