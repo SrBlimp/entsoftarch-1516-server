@@ -17,8 +17,6 @@ Feature: Assign student to a proposal
     When I assign a existing user to not existing publication
     Then I get error 500 with message "Trying to assign user to existing proposal"
 
-
-
   Scenario: Assign existing proposal submission to an existing user
     Given there is an existing proposal with title "Really interesting project"
     And there is an existing submission of the proposal titled "Really interesting project"
