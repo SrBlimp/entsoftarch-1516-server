@@ -174,6 +174,13 @@ public class MyStepdefs {
         proposalRepository.save(proposal);
     }
 
+    @Given("^there is an existing student with id \"([^\"]*)\"$")
+    public void thereIsAnExistingStudentWithId(String id) throws Throwable {
+        Student std = new Student();
+        std.setUsername(id);
+        studentRepository.save(std);
+    }
+
     @When("^I submit the proposal with title \"([^\"]*)\"$")
     public void iSubmitTheProposalWithTitle(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -321,6 +328,30 @@ public class MyStepdefs {
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
+    }
+
+    @When("^I assign a existing user with id \"([^\"]*)\" to the published proposal titled \"([^\"]*)\"$")
+    public void iAssignExistingUserToProposalTitled(String id, String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        Student std = studentRepository.findOne(id);
+
+        Set<Student> students = proposal.getStudents();
+        students.add(std);
+        proposal.setStudents(students);
+
+        /*
+        String message = String.format(
+                "{ \"assigned\": \"proposal /%s to student /%s\" }", proposal.getTitle(), std.getUsername());*/
+
+        /*
+        String message = String.format(
+                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
+
+        result = mockMvc.perform(post("/proposalWithdrawals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+        */
     }
 
     @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")
