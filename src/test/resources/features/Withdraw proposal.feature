@@ -15,7 +15,7 @@ Feature: Withdraw proposal
     When I withdraw the submission of the proposal titled "Really interesting project"
     Then I have created a withdrawal of the submission of the proposal titled "Really interesting project"
       And the status of the proposal titled "Really interesting project" is "DRAFT"
-      And an email has been sent to "coordinator@thesismarket" with subject "Proposal Withdrawal" and containing "Really interesting project"
+      And an email has been sent to "coordinator1@thesismarket" with subject "Proposal Withdrawal" and containing "Really interesting project"
 
   Scenario: Withdraw un-submitted proposal
     Given I login as "professor1" with password "password"

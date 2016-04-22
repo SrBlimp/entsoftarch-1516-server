@@ -31,17 +31,20 @@ public class AuthenticationConfig extends GlobalAuthenticationConfigurerAdapter 
                 .passwordEncoder(encoder)
                 .withUser("admin").password("18LcJuI3xeanShlrg/oherDmVf4=").roles("ADMIN").and()
                 .withUser("coordinator").password("18LcJuI3xeanShlrg/oherDmVf4=").roles("COORDINATOR").and()
-                .withUser("professor1").password("18LcJuI3xeanShlrg/oherDmVf4=").roles("PROFESSOR", "PROPONENT").and()
-                .withUser("student1").password("18LcJuI3xeanShlrg/oherDmVf4=").roles("STUDENT", "PROFESSOR");
+                .withUser("professor").password("18LcJuI3xeanShlrg/oherDmVf4=").roles("PROFESSOR", "PROPONENT").and()
+                .withUser("student").password("18LcJuI3xeanShlrg/oherDmVf4=").roles("STUDENT", "PROFESSOR");
 
         User coordinator = new Coordinator();
         coordinator.setUsername("coordinator");
+        coordinator.setEmail("coordinator@thesismarket");
         userRepository.save(coordinator);
         User professor = new Professor();
-        professor.setUsername("professor1");
+        professor.setUsername("professor");
+        professor.setEmail("professor@thesismarket");
         userRepository.save(professor);
         User student = new Student();
-        student.setUsername("student1");
+        student.setUsername("student");
+        student.setEmail("student@thesismarket");
         userRepository.save(student);
     }
 }

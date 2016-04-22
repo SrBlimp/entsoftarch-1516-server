@@ -23,6 +23,6 @@ Feature: Create proposal
     Then I get error 400 with message "Title cannot be blank"
 
   Scenario: Create proposal with coordinator user
-    Given I login as "coordinator" with password "password"
+    Given I login as "coordinator1" with password "password"
     When I create the proposal with title "Create proposal"
     Then I get error 403 with message "Access is denied"

@@ -4,13 +4,13 @@ Feature: Publish proposal
   I want review and make public the proposal
 
   Scenario: Publish an un-existing proposal
-    Given I login as "coordinator" with password "password"
+    Given I login as "coordinator1" with password "password"
     And there is not an existing proposal titled "Publish un-existing proposal"
     When I publish an un-existing proposal
     Then I get error 400 with message "may not be null"
 
   Scenario: Publish an un-submitted proposal
-    Given I login as "coordinator" with password "password"
+    Given I login as "coordinator1" with password "password"
     And there is an existing proposal with title "Publish a draft proposal"
     And there is not a submission of the proposal titled "Publish a draft proposal"
     And the status of the proposal titled "Publish a draft proposal" is "DRAFT"
@@ -19,7 +19,7 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a draft proposal" is "DRAFT"
 
   Scenario: Publish a submitted proposal but wrong status "DRAFT"
-    Given I login as "coordinator" with password "password"
+    Given I login as "coordinator1" with password "password"
     And there is an existing proposal with title "Publish a submitted proposal but wrong status"
     And there is an existing submission of the proposal titled "Publish a submitted proposal but wrong status"
     And the status of the proposal titled "Publish a submitted proposal but wrong status" is set to "DRAFT"
@@ -28,7 +28,7 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a submitted proposal but wrong status" is "DRAFT"
 
   Scenario: Publish a submitted proposal
-    Given I login as "coordinator" with password "password"
+    Given I login as "coordinator1" with password "password"
     And there is an existing proposal with title "Publish a submitted proposal"
     And there is an existing submission of the proposal titled "Publish a submitted proposal"
     And the status of the proposal titled "Publish a submitted proposal" is "SUBMITTED"
@@ -38,7 +38,7 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a submitted proposal" is "PUBLISHED"
 
   Scenario: Publish a submitted proposal but wrong status "PUBLISHED"
-    Given I login as "coordinator" with password "password"
+    Given I login as "coordinator1" with password "password"
     And there is an existing proposal with title "Publish a submitted proposal but wrong status"
     And there is an existing submission of the proposal titled "Publish a submitted proposal but wrong status"
     And the status of the proposal titled "Publish a submitted proposal but wrong status" is set to "PUBLISHED"
@@ -47,7 +47,7 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a submitted proposal but wrong status" is "PUBLISHED"
 
   Scenario: Publish a published proposal
-    Given I login as "coordinator" with password "password"
+    Given I login as "coordinator1" with password "password"
     And there is an existing proposal with title "Publish a published proposal"
     And there is an existing submission of the proposal titled "Publish a published proposal"
     And there is an existing publication of the proposal titled "Publish a published proposal"
@@ -57,7 +57,7 @@ Feature: Publish proposal
     And the status of the proposal titled "Publish a published proposal" is "PUBLISHED"
 
   Scenario: Coordinator comment published proposal
-    Given I login as "coordinator" with password "password"
+    Given I login as "coordinator1" with password "password"
     And there is an existing proposal with title "Comment publish proposal"
     And there is an existing submission of the proposal titled "Comment publish proposal"
     And there is not a publication of the submission of the proposal titled "Comment publish proposal"

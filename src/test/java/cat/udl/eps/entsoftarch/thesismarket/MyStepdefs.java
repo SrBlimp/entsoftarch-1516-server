@@ -596,8 +596,7 @@ public class MyStepdefs {
         ArgumentCaptor<SimpleMailMessage> argument = ArgumentCaptor.forClass(SimpleMailMessage.class);
         verify(javaMailSender, atLeastOnce()).send(argument.capture());
         SimpleMailMessage lastEMail = argument.getAllValues().get(argument.getAllValues().size()-1);
-        //TODO: email is not being saved!
-        // assertTrue(lastEMail.getTo()[0].equals(recipient));
+        assertTrue(lastEMail.getTo()[0].equals(recipient));
         assertTrue(lastEMail.getSubject().equals(subject));
         assertThat(lastEMail.getText(), containsString(bodyText));
     }
