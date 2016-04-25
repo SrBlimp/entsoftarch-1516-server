@@ -774,6 +774,23 @@ public class MyStepdefs {
 
     }
 
+    @Then("^check title editor user is logged$")
+    public void checkTitleEditorUserIsLogged() throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String creatorUri = JsonPath.read(response, "$._links.creator.href");
+
+        result = mockMvc.perform(get(creatorUri).
+                accept(MediaType.APPLICATION_JSON));
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
+    }
+
     @When("^I list proposals$")
     public void iListProposals() throws Throwable {
         result = mockMvc.perform(get("/proposals")
