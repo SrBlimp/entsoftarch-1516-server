@@ -3,10 +3,9 @@ Feature: Edit proposal
   As a proponent
   I want to edit a proposal
 
-
-  Scenario: Edit existing proposal logged as professor OK
-    Given there is an existing proposal with title "Really interesting project" by "professor1"
-      And I login as "professor1" with password "password"
+  Scenario: Edit existing proposal
+    Given I login as "professor1" with password "password"
+      And I create the proposal with title "Very interesting project"
     When I edit the proposal with title "Very interesting project" with new title "Not interesting project"
     Then I have edited the proposal with title "Not interesting project"
       And check title editor user is logged
