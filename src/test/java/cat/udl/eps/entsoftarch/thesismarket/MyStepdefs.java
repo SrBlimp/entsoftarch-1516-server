@@ -715,11 +715,16 @@ public class MyStepdefs {
         String message = String.format(
                 "{ \"title\" : \"%s\"}", newTitle);
 
-        result = mockMvc.perform(put("/proposals/1")
+        MockHttpServletRequestBuilder postRequest = put("/proposals/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword)));
+                .with(httpBasic(currentUsername, currentPassword));
+
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
     }
 
     @Given("^there isn't any proposal$")
