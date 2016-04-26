@@ -707,12 +707,18 @@ public class MyStepdefs {
     }
 
     @And("^there is an existing offer for the user \"([^\"]*)\" and the proposal \"([^\"]*)\"$")
-    public void thereIsAnExistingOfferForTheUserAndTheProposal(String user, String title) throws Throwable {
+    public void thereIsAnExistingOfferForTheUserAndTheProposal(String id, String title) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        //throw new PendingException();
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
 
+        Student std = studentRepository.findOne(id);
 
-
+        StudentOffer offer = new StudentOffer();
+        offer.setAgent(std);
+        offer.setTarget(proposalPublication);
     }
 }
 
