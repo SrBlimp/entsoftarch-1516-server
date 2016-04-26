@@ -8,6 +8,7 @@ import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import com.jayway.jsonpath.JsonPath;
+import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -335,9 +336,7 @@ public class MyStepdefs {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         Student std = studentRepository.findOne(id);
 
-        Set<Student> students = proposal.getStudents();
-        students.add(std);
-        proposal.setStudents(students);
+
 
         /*
         String message = String.format(
@@ -705,6 +704,15 @@ public class MyStepdefs {
         assertTrue(lastEMail.getTo()[0].equals(recipient));
         assertTrue(lastEMail.getSubject().equals(subject));
         assertThat(lastEMail.getText(), containsString(bodyText));
+    }
+
+    @And("^there is an existing offer for the user \"([^\"]*)\" and the proposal \"([^\"]*)\"$")
+    public void thereIsAnExistingOfferForTheUserAndTheProposal(String user, String title) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+
+
+
     }
 }
 
