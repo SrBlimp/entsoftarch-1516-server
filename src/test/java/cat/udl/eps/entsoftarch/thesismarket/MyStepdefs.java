@@ -67,6 +67,7 @@ public class MyStepdefs {
     @Autowired private ProposalPublicationRepository proposalPublicationRepository;
     @Autowired private ProponentRepository proponentRepository;
     @Autowired private StudentRepository studentRepository;
+    @Autowired private ProfessorRepository professorRepository;
     @Autowired private JavaMailSender javaMailSender;
     @Autowired private StudentOfferRepository studentOfferRepository;
 
@@ -177,6 +178,22 @@ public class MyStepdefs {
     public void theDirectorOfTheProposalTitledIsNotNull(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         assertNotNull(proposal.getDirector());
+    }
+
+    @And("^the student of the proposal titled \"([^\"]*)\" is set to \"([^\"]*)\"$")
+    public void theStudentOfTheProposalTitledIsSetTo(String title, String userName) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        Student student = studentRepository.findOne(userName);
+        Set<Student> students = new HashSet<>();
+        students.add(student);
+        proposal.setStudents(students);
+    }
+
+    @And("^the director of the proposal titled \"([^\"]*)\" is set to \"([^\"]*)\"$")
+    public void theDirectorOfTheProposalTitledIsSetTo(String title, String userName) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        Professor professor = professorRepository.findOne(userName);
+        proposal.setDirector(professor);
     }
 
     @When("^I submit the proposal with title \"([^\"]*)\"$")
