@@ -79,3 +79,4 @@ Feature: Offer as student
     When I offer as student to a publication proposal with title "Really interesting proposal"
     Then I get error 403 with message "Access is denied"
       And the status of the proposal titled "Really interesting proposal" is "PUBLISHED"
+    

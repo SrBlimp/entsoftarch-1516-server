@@ -5,6 +5,7 @@ import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.StudentOfferRepository;
 import cat.udl.eps.entsoftarch.thesismarket.repository.StudentRepository;
+//import com.sun.java.swing.plaf.windows.TMSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,10 @@ public class StudentOfferEventHandler {
     private StudentOfferRepository studentOfferRepository;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private ProponentRepository proponentRepository;
+    @Autowired
+    private MailService mailService;
 
     @HandleBeforeCreate
     @Transactional
@@ -62,6 +67,19 @@ public class StudentOfferEventHandler {
         Assert.isTrue(!denied,
                 "Repeated StudentOffer");
 
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Proponent proponent = proponentRepository.findOne(username);
+
+        String subject = "Student Offer";
+        String message = "Dear proponent, \n\n" +
+                "Please, be aware that a new Student Offer of the proposal \"" +
+                proposal.getTitle() + "\" by " + proponent.getUsername() + " has been created by "+
+                studentOffer.getAgent()+" \n\n" +
+                "Best regards, \n\n" +
+                "Thesis Market";
+
+        mailService.sendMessage(proponent.getEmail(),subject,message);
 /*
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
