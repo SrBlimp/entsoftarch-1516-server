@@ -334,6 +334,9 @@ public class MyStepdefs {
     @When("^I assign a existing user with id \"([^\"]*)\" to the published proposal titled \"([^\"]*)\"$")
     public void iAssignExistingUserToProposalTitled(String id, String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+
         Student std = studentRepository.findOne(id);
 
 
@@ -719,6 +722,7 @@ public class MyStepdefs {
         StudentOffer offer = new StudentOffer();
         offer.setAgent(std);
         offer.setTarget(proposalPublication);
+
     }
 }
 
