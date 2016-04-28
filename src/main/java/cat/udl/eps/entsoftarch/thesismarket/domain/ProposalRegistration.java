@@ -5,11 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by http://rhizomik.net/~roberto/
@@ -35,9 +32,9 @@ public class ProposalRegistration extends Event {
 
     public void setAgent(Coordinator agent){this.agent = agent;}
 
-    public ProposalPublication getRegister(){return registers;}
+    public ProposalPublication getRegisters(){return registers;}
 
-    public void setRegister(ProposalPublication proposalPublication){ this.registers = proposalPublication;}
+    public void setRegisters(ProposalPublication proposalPublication){ this.registers = proposalPublication;}
 
     @Nullable
     public ProjectDeposit getDepositedBy(){return depositedBy;}
