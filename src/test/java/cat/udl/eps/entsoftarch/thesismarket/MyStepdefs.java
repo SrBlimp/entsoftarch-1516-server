@@ -5,6 +5,7 @@ import cat.udl.eps.entsoftarch.thesismarket.config.MailTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import com.jayway.jsonpath.JsonPath;
+import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -30,9 +31,15 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -62,6 +69,7 @@ public class MyStepdefs {
     @Autowired private ProponentRepository proponentRepository;
     @Autowired private StudentRepository studentRepository;
     @Autowired private JavaMailSender javaMailSender;
+    @Autowired private StudentOfferRepository studentOfferRepository;
 
     private String currentUsername;
     private String currentPassword;
@@ -153,6 +161,13 @@ public class MyStepdefs {
         proposalRepository.save(proposal);
     }
 
+    @Given("^there is an existing student with id \"([^\"]*)\"$")
+    public void thereIsAnExistingStudentWithId(String id) throws Throwable {
+        Student std = new Student();
+        std.setUsername(id);
+        studentRepository.save(std);
+    }
+
     @When("^I submit the proposal with title \"([^\"]*)\"$")
     public void iSubmitTheProposalWithTitle(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -215,7 +230,27 @@ public class MyStepdefs {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword)));
+                .with(httpBasic(currentUsername, currentPassword))
+                .accept(MediaType.APPLICATION_JSON));
+
+    }
+
+    @When("^I assign a existing user to the published proposal titled \"([^\"]*)\"$")
+    public void iAssignExistingUsertoProposalTitled(String title) throws Throwable {
+        /*
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalWithdrawal proposalWithdrawal = new ProposalWithdrawal();
+        proposalWithdrawal.setWithdraws(proposalSubmission);
+
+        String message = String.format(
+                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
+
+        result = mockMvc.perform(post("/proposalWithdrawals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+        */
     }
 
     @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
@@ -280,6 +315,27 @@ public class MyStepdefs {
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
+    }
+
+    @When("^I assign a existing user with id \"([^\"]*)\" to the published proposal titled \"([^\"]*)\"$")
+    public void iAssignExistingUserToProposalTitled(String id, String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+
+        Student std = studentRepository.findOne(id);
+        StudentOffer offer = studentOfferRepository.findByAgent(std).get(0);
+
+
+        String message = String.format(
+                "{ \"assigns\": \"studentOffers/%s\" }", offer.getId());
+
+        result = mockMvc.perform(post("/studentsAssignments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+
     }
 
     @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")
@@ -599,6 +655,35 @@ public class MyStepdefs {
         assertTrue(lastEMail.getTo()[0].equals(recipient));
         assertTrue(lastEMail.getSubject().equals(subject));
         assertThat(lastEMail.getText(), containsString(bodyText));
+    }
+
+    @And("^there is an existing offer for the user \"([^\"]*)\" and the proposal \"([^\"]*)\"$")
+    public void thereIsAnExistingOfferForTheUserAndTheProposal(String id, String title) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        //throw new PendingException();
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+
+        Student std = studentRepository.findOne(id);
+
+        StudentOffer offer = new StudentOffer();
+        offer.setAgent(std);
+        offer.setTarget(proposalPublication);
+        studentOfferRepository.save(offer);
+
+    }
+
+    @Then("^I have created a student assignment for student \"([^\"]*)\" and proposal titled \"([^\"]*)\"$")
+    public void iHaveCreatedAStudentAssignmentForStudentAndProposalTitled(String userId, String title) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        //result.andExpect(status().isCreated());
+
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
     }
 }
 
