@@ -5,6 +5,8 @@ Feature: Register proposal
 
   Scenario: Register published proposal
     Given there is an existing proposal with title "Register my proposal"
+      And there is an existing submission of the proposal titled "Register my proposal"
+      And there is an existing publication of the proposal titled "Register my proposal"
       And the status of the proposal titled "Register my proposal" is set to "ASSIGNED"
       And the student of the proposal titled "Register my proposal" is set to "student1"
       And the director of the proposal titled "Register my proposal" is set to "professor1"
