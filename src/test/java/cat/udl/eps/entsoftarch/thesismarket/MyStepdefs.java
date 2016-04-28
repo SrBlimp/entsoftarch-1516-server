@@ -330,11 +330,9 @@ public class MyStepdefs {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
         ProposalPublication proposalPublication =  proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
-        ProposalRegistration proposalRegistration = new ProposalRegistration();
-        proposalRegistration.setRegister(proposalPublication);
 
         String message = String.format(
-                "{ \"registers\": \"proposalPublications/%s\" }", proposalRegistration.getId());
+                "{ \"registers\": \"proposalPublications/%s\" }", proposalPublication.getId());
 
         result = mockMvc.perform(post("/proposalRegistrations")
                 .contentType(MediaType.APPLICATION_JSON)
