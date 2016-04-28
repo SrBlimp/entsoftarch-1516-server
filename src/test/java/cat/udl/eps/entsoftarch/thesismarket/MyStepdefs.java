@@ -4,9 +4,6 @@ import cat.udl.eps.entsoftarch.thesismarket.config.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.config.MailTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
-import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
-import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
-import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import com.jayway.jsonpath.JsonPath;
 import cucumber.api.PendingException;
 import cucumber.api.java.Before;
@@ -43,7 +40,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -70,12 +66,10 @@ public class MyStepdefs {
     @Autowired private ProposalRepository proposalRepository;
     @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
     @Autowired private ProposalPublicationRepository proposalPublicationRepository;
-    @Autowired private UserRepository userRepository;
     @Autowired private ProponentRepository proponentRepository;
     @Autowired private StudentRepository studentRepository;
     @Autowired private JavaMailSender javaMailSender;
-    @Autowired private UserRepository userRepository;
-    @Autowired private StudentRepository stdRepository;
+    @Autowired private StudentOfferRepository studentOfferRepository;
 
     private String currentUsername;
     private String currentPassword;
@@ -113,14 +107,6 @@ public class MyStepdefs {
         Proposal proposal = new Proposal();
         proposal.setTitle(title);
         proposalRepository.save(proposal);
-    }
-
-    @Given("^there is an existing student with id \"([^\"]*)\"$")
-    public void thereIsAnExistingUserWithId(Long id) throws Throwable {
-        User user = new User();
-        user.setId(id);
-        //Falta implementar save a la classe UserRepository
-        userRepository.save(user);
     }
 
     @And("^there is an existing submission of the proposal titled \"([^\"]*)\"$")
@@ -244,7 +230,7 @@ public class MyStepdefs {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword)));
+                .with(httpBasic(currentUsername, currentPassword))
                 .accept(MediaType.APPLICATION_JSON));
 
     }
@@ -338,22 +324,18 @@ public class MyStepdefs {
         ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
 
         Student std = studentRepository.findOne(id);
+        StudentOffer offer = studentOfferRepository.findByAgent(std).get(0);
 
 
-
-        /*
         String message = String.format(
-                "{ \"assigned\": \"proposal /%s to student /%s\" }", proposal.getTitle(), std.getUsername());*/
+                "{ \"assigns\": \"studentOffers/%s\" }", offer.getId());
 
-        /*
-        String message = String.format(
-                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
-
-        result = mockMvc.perform(post("/proposalWithdrawals")
+        result = mockMvc.perform(post("/studentsAssignments")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
-        */
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+
     }
 
     @Then("^I have created a proposal submission that submits a proposal with title \"([^\"]*)\"$")
@@ -547,40 +529,6 @@ public class MyStepdefs {
                 .accept(MediaType.APPLICATION_JSON));
     }
 
-    @Given("^there is an existing student with id \"([^\"]*)\"$")
-    public void thereIsAnExistingStudentWithId(String id) throws Throwable {
-        Student std = new Student();
-        std.setUsername(id);
-        stdRepository.save(std);
-    }
-
-    @When("^I assign a existing user with id \"([^\"]*)\" to the published proposal titled \"([^\"]*)\"$")
-    public void iAssignExistingUserToProposalTitled(String id, String title) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        Student std = stdRepository.findOne(id);
-
-        Set<Student> students = proposal.getStudents();
-        students.add(std);
-        proposal.setStudents(students);
-
-        /*
-        String message = String.format(
-                "{ \"assigned\": \"proposal /%s to student /%s\" }", proposal.getTitle(), std.getUsername());*/
-
-        /*
-        String message = String.format(
-                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
-
-        result = mockMvc.perform(post("/proposalWithdrawals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(message)
-                .accept(MediaType.APPLICATION_JSON));
-
-        */
-    }
-
-
-
     @Then("^I have two offer student more created of the publication proposal of the submission of the proposal titled \"([^\"]*)\"$")
     public void iHaveTwoOfferStudentCreatedOfThePublicationProposalOfTheSubmissionOfTheProposalTitled(String title) throws Throwable {
         String response = result
@@ -722,6 +670,19 @@ public class MyStepdefs {
         StudentOffer offer = new StudentOffer();
         offer.setAgent(std);
         offer.setTarget(proposalPublication);
+        studentOfferRepository.save(offer);
+
+    }
+
+    @Then("^I have created a student assignment for student \"([^\"]*)\" and proposal titled \"([^\"]*)\"$")
+    public void iHaveCreatedAStudentAssignmentForStudentAndProposalTitled(String userId, String title) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        //result.andExpect(status().isCreated());
+
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
 
     }
 }
