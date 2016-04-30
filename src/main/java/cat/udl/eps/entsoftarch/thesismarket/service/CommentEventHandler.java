@@ -1,14 +1,13 @@
 package cat.udl.eps.entsoftarch.thesismarket.service;
 
-import cat.udl.eps.entsoftarch.thesismarket.domain.Comment;
-import cat.udl.eps.entsoftarch.thesismarket.domain.Proponent;
-import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
-import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
+import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
+import cat.udl.eps.entsoftarch.thesismarket.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -30,7 +29,7 @@ public class CommentEventHandler {
 
     @HandleBeforeCreate
     @Transactional
-    @PreAuthorize("#comment.comments.submits.creator.username == authentication.name")
+    @PreAuthorize("#comment.comments.publishes.submits.creator.username == authentication.name")
     public void handleCommentPreCreate(Comment comment) {
         logger.info("Before creating: {}", comment.toString());
 
@@ -43,13 +42,13 @@ public class CommentEventHandler {
                         Proposal.Status.PUBLISHED + "'");
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Proponent proponent = userRepository.findOne(username);
-        comment.setAuthor(proponent);
+        User user = userRepository.findOne(username);
+        comment.setAuthor(user);
 
         String subject = "New comment";
         String message = "Dear coordinador, \n\n" +
                 "Please, be aware that the unpublished submission of the proposal \"" +
-                proposal.getTitle() + "\" by " + proponent.getUsername() + " New comment added. \n\n" +
+                proposal.getTitle() + "\" by " + user.getUsername() + " New comment added. \n\n" +
                 "Best regards, \n\n" +
                 "Thesis Market";
 
