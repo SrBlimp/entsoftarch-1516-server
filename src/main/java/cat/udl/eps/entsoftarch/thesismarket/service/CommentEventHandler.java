@@ -24,7 +24,7 @@ public class CommentEventHandler {
     final Logger logger = LoggerFactory.getLogger(CommentEventHandler.class);
 
     @Autowired
-    private ProponentRepository proponentRepository;
+    private UserRepository userRepository;
     @Autowired
     private MailService mailService;
 
@@ -42,7 +42,7 @@ public class CommentEventHandler {
                         Proposal.Status.PUBLISHED + "'");
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Proponent proponent = proponentRepository.findOne(username);
+        Proponent proponent = userRepository.findOne(username);
         comment.setAuthor(proponent);
 
         String subject = "New comment";
