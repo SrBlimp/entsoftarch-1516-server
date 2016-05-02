@@ -711,7 +711,7 @@ public class MyStepdefs {
 
     @When("^I edit the proposal with title \"([^\"]*)\" with new title \"([^\"]*)\"$")
     public void iEditTheProposalTitleWith(String title, String newTitle) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        //Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         String message = String.format(
                 "{ \"title\" : \"%s\"}", newTitle);
 
