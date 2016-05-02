@@ -1,10 +1,7 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProponentRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalPublicationRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalRepository;
-import cat.udl.eps.entsoftarch.thesismarket.repository.ProposalSubmissionRepository;
+import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import cat.udl.eps.entsoftarch.thesismarket.security.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.security.WebSecurityConfig;
 import com.jayway.jsonpath.JsonPath;
@@ -57,6 +54,7 @@ public class MyStepdefs {
     @Autowired private ProposalRepository proposalRepository;
     @Autowired private ProposalSubmissionRepository proposalSubmissionRepository;
     @Autowired private ProposalPublicationRepository proposalPublicationRepository;
+    @Autowired private ProposalRegistrationRepository proposalRegistrationRepository;
     @Autowired private ProponentRepository proponentRepository;
 
     private String currentUsername;
@@ -156,6 +154,15 @@ public class MyStepdefs {
         assertNotNull(proposal.getDirector());
     }
 
+    @And("^the director of the proposal titled \"([^\"]*)\" is set to \"([^\"]*)\"$")
+    public void theDirectorOfTheProposalTitledIsSetTo(String title, String professor) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        Professor prof = new Professor();
+        prof.setUsername(professor);
+        proposal.setDirector(prof);
+        assertNotNull(proposal.getDirector());
+    }
+
     @When("^I submit the proposal with title \"([^\"]*)\"$")
     public void iSubmitTheProposalWithTitle(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -224,7 +231,7 @@ public class MyStepdefs {
 
     @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
     public void iCommentTheProposalWithTitleWithACommentWithText(String title, String text) throws Throwable {
-        
+
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
         ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
@@ -281,9 +288,12 @@ public class MyStepdefs {
         ProposalPublication proposalPublication =  proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
         ProposalRegistration proposalRegistration = new ProposalRegistration();
         proposalRegistration.setRegister(proposalPublication);
+        proposal.setStatus(Proposal.Status.REGISTERED);
+        proposalRepository.save(proposal);
+        proposalRegistrationRepository.save(proposalRegistration);
 
         String message = String.format(
-                "{ \"registers\": \"proposalPublications/%s\" }", proposalRegistration.getId());
+                "{ \"registers\": \"proposalPublications/%s\" }", proposalPublication.getId());
 
         result = mockMvc.perform(post("/proposalRegistrations")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -553,6 +563,7 @@ public class MyStepdefs {
                 .andDo(print())
                 .andExpect(jsonPath("$.title", is(title)));
     }
+
 
 
 }
