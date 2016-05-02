@@ -15,11 +15,12 @@ Feature: Offer as student
 
   Scenario: Student is offered for an existing proposal created by a teacher
     Given I login as "student1" with password "password"
-      And there is an existing proposal with title "Really interesting proposal"
+      And there is an existing proposal with title "Really interesting proposal" by "professor1"
       And there is an existing submission of the proposal titled "Really interesting proposal"
       And there is an existing publication of the proposal titled "Really interesting proposal"
     When I offer as student to a publication proposal with title "Really interesting proposal"
     Then I have created an offer student of the publication proposal of the submission of the proposal titled "Really interesting proposal"
+      And an email has been sent to "professor1@thesismarket" with subject "Student Offer" and containing "Really interesting proposal"
 
   Scenario: Student is offered for an existing proposal created by a teacher with a previous offer student
     Given I login as "student1" with password "password"

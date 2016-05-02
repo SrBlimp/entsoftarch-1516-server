@@ -67,14 +67,15 @@ public class StudentOfferEventHandler {
         Assert.isTrue(!denied,
                 "Repeated StudentOffer");
 
-
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Proponent proponent = proponentRepository.findOne(username);
+        studentOffer.setAgent(studentRepository.findOne(username));
+        Proponent proponent = proposal.getCreator();
 
         String subject = "Student Offer";
         String message = "Dear proponent, \n\n" +
                 "Please, be aware that a new Student Offer of the proposal \"" +
-                proposal.getTitle() + "\" by " + proponent.getUsername() + " has been created by "+
+                proposal.getTitle() + "\" by " +
+                proponent.getUsername() + " has been created by "+
                 studentOffer.getAgent()+" \n\n" +
                 "Best regards, \n\n" +
                 "Thesis Market";
