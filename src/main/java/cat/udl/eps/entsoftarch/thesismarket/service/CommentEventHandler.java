@@ -29,7 +29,6 @@ public class CommentEventHandler {
 
     @HandleBeforeCreate
     @Transactional
-    @PreAuthorize("#comment.comments.publishes.submits.creator.username == authentication.name")
     public void handleCommentPreCreate(Comment comment) {
         logger.info("Before creating: {}", comment.toString());
 

@@ -58,7 +58,7 @@ Feature: Publish proposal
 
   Scenario: Coordinator comment published proposal
     Given I login as "coordinator1" with password "password"
-    And there is an existing proposal with title "Comment publish proposal" by "coordinator1"
+    And there is an existing proposal with title "Comment publish proposal" by "professor1"
     And there is an existing submission of the proposal titled "Comment publish proposal"
     And there is not a publication of the submission of the proposal titled "Comment publish proposal"
     When I publish the proposal with title "Comment publish proposal"
