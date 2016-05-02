@@ -18,6 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsMapper;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 
 import java.util.Collection;
 
@@ -68,6 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .httpBasic()
                 .realmName("ThesisMarketAPI")
                 .and()
+            .addFilterBefore(new CORSFilter(), ChannelProcessingFilter.class)
             .csrf()
                 .disable();
     }
