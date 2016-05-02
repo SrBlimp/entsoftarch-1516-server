@@ -58,7 +58,7 @@ Feature: Publish proposal
 
   Scenario: Coordinator comment published proposal
     Given I login as "coordinator1" with password "password"
-    And there is an existing proposal with title "Comment publish proposal"
+    And there is an existing proposal with title "Comment publish proposal" by "professor1"
     And there is an existing submission of the proposal titled "Comment publish proposal"
     And there is not a publication of the submission of the proposal titled "Comment publish proposal"
     When I publish the proposal with title "Comment publish proposal"
@@ -67,7 +67,7 @@ Feature: Publish proposal
 
   Scenario: Professor comment published proposal
     Given I login as "professor1" with password "password"
-    And there is an existing proposal with title "Comment publish proposal"
+    And there is an existing proposal with title "Comment publish proposal" by "professor1"
     And there is an existing submission of the proposal titled "Comment publish proposal"
     And there is an existing publication of the proposal titled "Comment publish proposal"
     When I comment the proposal with title "Comment publish proposal" with a comment with text "This is a comment"
@@ -75,7 +75,7 @@ Feature: Publish proposal
 
   Scenario: Student comment published proposal
     Given I login as "student1" with password "password"
-    And there is an existing proposal with title "Comment publish proposal"
+    And there is an existing proposal with title "Comment publish proposal" by "student1"
     And there is an existing submission of the proposal titled "Comment publish proposal"
     And there is an existing publication of the proposal titled "Comment publish proposal"
     When I comment the proposal with title "Comment publish proposal" with a comment with text "This is a comment"
