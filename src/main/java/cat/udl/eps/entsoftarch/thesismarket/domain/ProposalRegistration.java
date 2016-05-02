@@ -26,4 +26,23 @@ public class ProposalRegistration extends Event {
     @Nullable
     @JsonIgnore
     private ProjectDeposit depositedBy;
+
+
+    public Coordinator getAgent() {return agent;}
+
+    public void setAgent(Coordinator agent){this.agent = agent;}
+
+    public ProposalPublication getRegisters(){return registers;}
+
+    public void setRegisters(ProposalPublication proposalPublication){ this.registers = proposalPublication;}
+
+    @Nullable
+    public ProjectDeposit getDepositedBy(){return depositedBy;}
+
+    public  void setDepositedBy(ProjectDeposit projectDeposit){ this.depositedBy = projectDeposit;}
+
+    @Nullable
+    public ProposalWithdrawal getWithdrawedBy(){return getWithdrawedBy();}
+
+    public void setWithdrawedBy(ProposalWithdrawal proposalWithdrawal){this.withdrawedBy = proposalWithdrawal;}
 }

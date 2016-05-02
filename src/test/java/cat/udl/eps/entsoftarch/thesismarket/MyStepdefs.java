@@ -5,7 +5,6 @@ import cat.udl.eps.entsoftarch.thesismarket.config.MailTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import com.jayway.jsonpath.JsonPath;
-import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -31,15 +30,14 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -68,6 +66,7 @@ public class MyStepdefs {
     @Autowired private ProposalPublicationRepository proposalPublicationRepository;
     @Autowired private ProponentRepository proponentRepository;
     @Autowired private StudentRepository studentRepository;
+    @Autowired private ProfessorRepository professorRepository;
     @Autowired private JavaMailSender javaMailSender;
     @Autowired private StudentOfferRepository studentOfferRepository;
 
@@ -168,6 +167,34 @@ public class MyStepdefs {
         studentRepository.save(std);
     }
 
+    @And("^the student of the proposal titled \"([^\"]*)\" is not null$")
+    public void theStudentOfTheProposalTitledIsNotNull(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertNotNull(proposal.getStudents());
+    }
+
+    @And("^the director of the proposal titled \"([^\"]*)\" is not null$")
+    public void theDirectorOfTheProposalTitledIsNotNull(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        assertNotNull(proposal.getDirector());
+    }
+
+    @And("^the student of the proposal titled \"([^\"]*)\" is set to \"([^\"]*)\"$")
+    public void theStudentOfTheProposalTitledIsSetTo(String title, String userName) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        Student student = studentRepository.findOne(userName);
+        Set<Student> students = new HashSet<>();
+        students.add(student);
+        proposal.setStudents(students);
+    }
+
+    @And("^the director of the proposal titled \"([^\"]*)\" is set to \"([^\"]*)\"$")
+    public void theDirectorOfTheProposalTitledIsSetTo(String title, String userName) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        Professor professor = professorRepository.findOne(userName);
+        proposal.setDirector(professor);
+    }
+
     @When("^I submit the proposal with title \"([^\"]*)\"$")
     public void iSubmitTheProposalWithTitle(String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
@@ -230,27 +257,7 @@ public class MyStepdefs {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
                 .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword))
-                .accept(MediaType.APPLICATION_JSON));
-
-    }
-
-    @When("^I assign a existing user to the published proposal titled \"([^\"]*)\"$")
-    public void iAssignExistingUsertoProposalTitled(String title) throws Throwable {
-        /*
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalWithdrawal proposalWithdrawal = new ProposalWithdrawal();
-        proposalWithdrawal.setWithdraws(proposalSubmission);
-
-        String message = String.format(
-                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
-
-        result = mockMvc.perform(post("/proposalWithdrawals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(message)
-                .accept(MediaType.APPLICATION_JSON));
-        */
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I comment the proposal with title \"([^\"]*)\" with a comment with text \"([^\"]*)\"$")
@@ -316,6 +323,44 @@ public class MyStepdefs {
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
     }
+
+    @When("^I register published proposal titled \"([^\"]*)\"$")
+    public void iRegisterPublishedProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+        ProposalPublication proposalPublication =  proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
+
+        String message = String.format(
+                "{ \"registers\": \"proposalPublications/%s\" }", proposalPublication.getId());
+
+        result = mockMvc.perform(post("/proposalRegistrations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("^I register un-published proposal$")
+    public void iRegisterUnPublishedProposal() throws Throwable {
+        String message = String.format(
+                "{ \"registers\": \"proposalPublications/%s\" }", 101010);
+
+        result = mockMvc.perform(post("/proposalRegistrations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("^I register un-assigned proposal$")
+    public void iRegisterUnAssignedProposal() throws Throwable {
+        String message = String.format(
+                "{ \"registers\": \"proposalPublications/%s\" }", 111111);
+
+        result = mockMvc.perform(post("/proposalRegistrations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
 
     @When("^I assign a existing user with id \"([^\"]*)\" to the published proposal titled \"([^\"]*)\"$")
     public void iAssignExistingUserToProposalTitled(String id, String title) throws Throwable {
@@ -619,6 +664,46 @@ public class MyStepdefs {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
+    }
+
+    @Then("^I have a registered proposal titled \"([^\"]*)\"$")
+    public void iHaveARegisteredProposalTitled(String title) throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String registersUri = JsonPath.read(response, "$._links.registers.href");
+
+        result = mockMvc.perform(get(registersUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        String publishesUri = JsonPath.read(response, "$._links.publishes.href");
+
+        result = mockMvc.perform(get(publishesUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        response = result
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        String submitsUri = JsonPath.read(response, "$._links.submits.href");
+
+        result = mockMvc.perform(get(submitsUri)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(title)));
     }
 
     @When("^I edit the proposal with title \"([^\"]*)\" with new title \"([^\"]*)\"$")
