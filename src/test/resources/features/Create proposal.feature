@@ -9,7 +9,7 @@ Feature: Create proposal
     Then new proposal with title "Create new proposal"
     Then check proposal status is "DRAFT"
     Then check proposal creator is user logged
-
+    And an email has been sent to "student1@thesismarket" with subject "Create Proposal" and containing "Create new proposal"
 
   Scenario: Create proposal and already created with title is "Proposal"
     Given I login as "professor1" with password "password"
