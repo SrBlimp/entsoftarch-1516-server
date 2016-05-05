@@ -29,13 +29,14 @@ Feature: Publish proposal
 
   Scenario: Publish a submitted proposal
     Given I login as "coordinator1" with password "password"
-    And there is an existing proposal with title "Publish a submitted proposal"
+    And there is an existing proposal with title "Publish a submitted proposal" by "professor1"
     And there is an existing submission of the proposal titled "Publish a submitted proposal"
     And the status of the proposal titled "Publish a submitted proposal" is "SUBMITTED"
     And there is not a publication of the submission of the proposal titled "Publish a submitted proposal"
     When I publish the proposal with title "Publish a submitted proposal"
     Then I have a proposal publication with title "Publish a submitted proposal"
     And the status of the proposal titled "Publish a submitted proposal" is "PUBLISHED"
+    And an email has been sent to "professor1@thesismarket" with subject "Proposal Published" and containing "Your proposal with title"
 
   Scenario: Publish a submitted proposal but wrong status "PUBLISHED"
     Given I login as "coordinator1" with password "password"
