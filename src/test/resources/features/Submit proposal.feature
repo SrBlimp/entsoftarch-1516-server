@@ -11,6 +11,7 @@ Feature: Submit proposal
     When I submit the proposal with title "Really interesting project"
     Then I have created a proposal submission that submits a proposal with title "Really interesting project"
     And the status of the proposal titled "Really interesting project" is "SUBMITTED"
+    And an email has been sent to "coordinator1@thesismarket" with subject "Proposal Submission" and containing "Really interesting project"
 
 
   Scenario: Submit unexisting proposal
