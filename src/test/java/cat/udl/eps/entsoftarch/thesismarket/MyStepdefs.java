@@ -392,7 +392,8 @@ public class MyStepdefs {
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -422,7 +423,8 @@ public class MyStepdefs {
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -460,7 +462,8 @@ public class MyStepdefs {
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -550,7 +553,8 @@ public class MyStepdefs {
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         //aqui no hace falta guardar result en response porque no se necesita ir a ningun atributo de esta respuesta
         result
@@ -656,8 +660,9 @@ public class MyStepdefs {
 
         String creatorUri = JsonPath.read(response, "$._links.creator.href");
 
-        result = mockMvc.perform(get(creatorUri).
-                accept(MediaType.APPLICATION_JSON));
+        result = mockMvc.perform(get(creatorUri)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andDo(print())
                 .andExpect(status().isOk())
@@ -696,7 +701,8 @@ public class MyStepdefs {
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
