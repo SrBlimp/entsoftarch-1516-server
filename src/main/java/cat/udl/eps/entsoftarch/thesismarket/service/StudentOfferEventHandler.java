@@ -81,11 +81,7 @@ public class StudentOfferEventHandler {
                 "Thesis Market";
 
         mailService.sendMessage(proponent.getEmail(),subject,message);
-/*
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Student student = studentRepository.findOne(username);
-        studentOffer.setAgent(student);*/
 
     }
 
