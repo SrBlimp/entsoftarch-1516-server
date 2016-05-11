@@ -7,15 +7,19 @@ import cat.udl.eps.entsoftarch.thesismarket.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.SecurityDataConfiguration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication
-@Import({SecurityDataConfiguration.class})
 public class ThesismarketApiApplication {
+	@Bean
+	public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+		return new SecurityEvaluationContextExtension();
+	}
+
 	@Autowired Environment env;
 	@Autowired ProposalRepository proposalRepository;
 	@Autowired ProfessorRepository professorRepository;
