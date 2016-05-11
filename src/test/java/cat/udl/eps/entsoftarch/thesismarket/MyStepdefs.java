@@ -1,6 +1,5 @@
 package cat.udl.eps.entsoftarch.thesismarket;
 
-import cat.udl.eps.entsoftarch.thesismarket.config.AuthenticationTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.config.MailTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
@@ -47,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by http://rhizomik.net/~roberto/
  */
 @ContextConfiguration(
-        classes = {ThesismarketApiApplication.class, MailTestConfig.class, AuthenticationTestConfig.class},
+        classes = {ThesismarketApiApplication.class, MailTestConfig.class},
         loader = SpringApplicationContextLoader.class)
 @DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -777,7 +776,7 @@ public class MyStepdefs {
 
     @When("^I list proposals$")
     public void iListProposals() throws Throwable {
-        result = mockMvc.perform(get("/proposals/search/findMine")
+        result = mockMvc.perform(get("/proposals")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));

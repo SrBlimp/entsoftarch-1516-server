@@ -11,8 +11,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 
-import javax.inject.Inject;
-
 /**
  * Created by http://rhizomik.net/~roberto/
  */
@@ -21,7 +19,7 @@ import javax.inject.Inject;
 public class AuthenticationUdLConfig extends GlobalAuthenticationConfigurerAdapter {
 
     @Autowired UserRepository userRepository;
-    @Inject UserDetailsContextMapper userDetailsContextMapper;
+    @Autowired UserDetailsContextMapper userDetailsContextMapper;
 
     @Override
     public void init(AuthenticationManagerBuilder auth) throws Exception {
