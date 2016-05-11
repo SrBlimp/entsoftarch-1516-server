@@ -777,7 +777,7 @@ public class MyStepdefs {
 
     @When("^I list proposals$")
     public void iListProposals() throws Throwable {
-        result = mockMvc.perform(get("/proposals")
+        result = mockMvc.perform(get("/proposals/search/findMine")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(httpBasic(currentUsername, currentPassword)));
