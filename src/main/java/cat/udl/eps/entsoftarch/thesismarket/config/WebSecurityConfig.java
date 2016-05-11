@@ -56,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PATCH, "/comments*/**").authenticated()
                 //Proposal
                 .antMatchers(HttpMethod.GET, "/proposals/search/**").authenticated()
-                .antMatchers(HttpMethod.GET, "/proposals*/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/proposals*/**").authenticated() //hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/proposals*/**").authenticated()
                 .antMatchers(HttpMethod.POST, "/proposals*/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/proposals*/**").authenticated()
