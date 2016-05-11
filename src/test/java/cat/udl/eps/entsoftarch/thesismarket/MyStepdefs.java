@@ -33,8 +33,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
@@ -394,7 +392,8 @@ public class MyStepdefs {
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -424,7 +423,8 @@ public class MyStepdefs {
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -462,7 +462,8 @@ public class MyStepdefs {
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -552,7 +553,8 @@ public class MyStepdefs {
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         //aqui no hace falta guardar result en response porque no se necesita ir a ningun atributo de esta respuesta
         result
@@ -658,8 +660,9 @@ public class MyStepdefs {
 
         String creatorUri = JsonPath.read(response, "$._links.creator.href");
 
-        result = mockMvc.perform(get(creatorUri).
-                accept(MediaType.APPLICATION_JSON));
+        result = mockMvc.perform(get(creatorUri)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andDo(print())
                 .andExpect(status().isOk())
@@ -698,7 +701,8 @@ public class MyStepdefs {
         String submitsUri = JsonPath.read(response, "$._links.submits.href");
 
         result = mockMvc.perform(get(submitsUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -769,6 +773,30 @@ public class MyStepdefs {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
+    }
+
+    @When("^I list proposals$")
+    public void iListProposals() throws Throwable {
+        result = mockMvc.perform(get("/proposals/search/findMine")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
+    @Then("^I get \"([^\"]*)\" proposals$")
+    public void iGetProposals(int count) throws Throwable {
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$._embedded.proposals", hasSize(count)));
+    }
+
+    @Then("^I get proposals all with title containing \"([^\"]*)\"$")
+    public void iGetProposals(String text) throws Throwable {
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$._embedded.proposals[*].title", everyItem(containsString(text))));
     }
 }
 
