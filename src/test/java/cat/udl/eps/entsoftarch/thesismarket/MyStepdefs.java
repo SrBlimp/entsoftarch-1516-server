@@ -718,14 +718,31 @@ public class MyStepdefs {
         MockHttpServletRequestBuilder postRequest = put("/proposals/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword));
+                .accept(MediaType.APPLICATION_JSON);
 
         if (currentUsername != null)
             postRequest.with(httpBasic(currentUsername, currentPassword));
 
         result = mockMvc.perform(postRequest);
     }
+
+    /*@When("^I withdraw the submission of the proposal titled \"([^\"]*)\"$")
+    public void iWithdrawTheSubmissionOfTheProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+
+        String message = String.format(
+                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
+
+        MockHttpServletRequestBuilder postRequest = post("/proposalWithdrawals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON);
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
+    }*/
 
     @Given("^there isn't any proposal$")
     public void thereIsnTAnyProposal() throws Throwable {
