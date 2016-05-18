@@ -8,6 +8,7 @@ Feature: Publish proposal
     And there is not an existing proposal titled "Publish un-existing proposal"
     When I publish an un-existing proposal
     Then I get error 400 with message "may not be null"
+    And no message has been sent
 
   Scenario: Publish an un-submitted proposal
     Given I login as "coordinator1" with password "password"
@@ -17,6 +18,7 @@ Feature: Publish proposal
     When I publish an un-existing submission
     Then I get error 400 with message "may not be null"
     And the status of the proposal titled "Publish a draft proposal" is "DRAFT"
+    And no message has been sent
 
   Scenario: Publish a submitted proposal but wrong status "DRAFT"
     Given I login as "coordinator1" with password "password"
@@ -26,6 +28,7 @@ Feature: Publish proposal
     When I publish the proposal with title "Publish a submitted proposal but wrong status"
     Then I get error 500 with message "Invalid proposal status 'DRAFT', should be 'SUBMITTED'"
     And the status of the proposal titled "Publish a submitted proposal but wrong status" is "DRAFT"
+    And no message has been sent
 
   Scenario: Publish a submitted proposal
     Given I login as "coordinator1" with password "password"
@@ -46,6 +49,7 @@ Feature: Publish proposal
     When I publish the proposal with title "Publish a submitted proposal but wrong status"
     Then I get error 500 with message "Invalid proposal status 'PUBLISHED', should be 'SUBMITTED'"
     And the status of the proposal titled "Publish a submitted proposal but wrong status" is "PUBLISHED"
+    And no message has been sent
 
   Scenario: Publish a published proposal
     Given I login as "coordinator1" with password "password"
@@ -56,6 +60,7 @@ Feature: Publish proposal
     When I publish the proposal with title "Publish a published proposal"
     Then I get error 500 with message "Invalid proposal status 'PUBLISHED', should be 'SUBMITTED'"
     And the status of the proposal titled "Publish a published proposal" is "PUBLISHED"
+    And no message has been sent
 
   Scenario: Coordinator comment published proposal
     Given I login as "coordinator1" with password "password"
@@ -90,6 +95,7 @@ Feature: Publish proposal
     And there is not a publication of the submission of the proposal titled "Professor1 publish proposal"
     When I publish the proposal with title "Professor1 publish proposal"
     Then there is not a publication of the submission of the proposal titled "Professor1 publish proposal"
+    And no message has been sent
 
   Scenario: Student publish proposal
     Given I login as "student1" with password "password"
@@ -98,3 +104,4 @@ Feature: Publish proposal
     And there is not a publication of the submission of the proposal titled "Student1 publish proposal"
     When I publish the proposal with title "Student1 publish proposal"
     Then there is not a publication of the submission of the proposal titled "Student1 publish proposal"
+    And no message has been sent
