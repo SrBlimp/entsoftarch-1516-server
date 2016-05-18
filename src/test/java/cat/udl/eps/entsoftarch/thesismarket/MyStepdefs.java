@@ -805,8 +805,9 @@ public class MyStepdefs {
 
         String creatorUri = JsonPath.read(response, "$._links.creator.href");
 
-        result = mockMvc.perform(get(creatorUri).
-                accept(MediaType.APPLICATION_JSON));
+        result = mockMvc.perform(get(creatorUri)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result.andDo(print())
                 .andExpect(status().isOk())
