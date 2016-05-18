@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -770,6 +771,11 @@ public class MyStepdefs {
         assertTrue(lastEMail.getTo()[0].equals(recipient));
         assertTrue(lastEMail.getSubject().equals(subject));
         assertThat(lastEMail.getText(), containsString(bodyText));
+    }
+
+    @Then("^no message has been sent$")
+    public void no_message_has_been_sent() throws Throwable {
+        verifyZeroInteractions(javaMailSender);
     }
 
     @And("^there is an existing offer for the user \"([^\"]*)\" and the proposal \"([^\"]*)\"$")
