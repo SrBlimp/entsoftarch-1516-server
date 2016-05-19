@@ -15,7 +15,7 @@ import java.util.Set;
 @Entity
 public class ProposalPublication extends Event {
     @ManyToOne
-    private Proponent agent;
+    private Coordinator agent;
     @OneToOne
     @NotNull
     private ProposalSubmission publishes;
@@ -32,9 +32,9 @@ public class ProposalPublication extends Event {
     @OneToMany(mappedBy = "target")
     private Set<CoDirectorOffer> interestedCoDirectors = new HashSet<>();
 
-    public Proponent getAgent() { return agent; }
+    public Coordinator getAgent() { return agent; }
 
-    public void setAgent(Proponent agent) { this.agent = agent; }
+    public void setAgent(Coordinator agent) { this.agent = agent; }
 
     public ProposalSubmission getPublishes() { return publishes; }
 
