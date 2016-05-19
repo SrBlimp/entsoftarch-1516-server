@@ -74,10 +74,10 @@ public class StudentOfferEventHandler {
         String subject = "Student Offer";
         String message = "Dear proponent, \n\n" +
                 "Please, be aware that a new Student Offer of the proposal \"" +
-                proposal.getTitle() + "\" by " +
-                proponent.getUsername() + " has been created by "+
+               proposal.getTitle() +
+                 " has been created by "+
                 studentOffer.getAgent()+" \n\n" +
-                "Best regards, \n\n" +
+             "Best regards, \n\n" +
                 "Thesis Market";
 
         mailService.sendMessage(proponent.getEmail(),subject,message);
