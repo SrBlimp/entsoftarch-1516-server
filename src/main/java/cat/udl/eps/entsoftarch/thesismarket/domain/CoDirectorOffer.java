@@ -22,4 +22,6 @@ public class CoDirectorOffer extends Offer {
     @JsonIgnore
     @Nullable
     CoDirectorAssignment assignedBy;
+
+
 }

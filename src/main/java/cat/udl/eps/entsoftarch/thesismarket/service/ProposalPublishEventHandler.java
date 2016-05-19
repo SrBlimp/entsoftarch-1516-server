@@ -27,6 +27,7 @@ public class ProposalPublishEventHandler {
 
     @Autowired private ProposalRepository proposalRepository;
     @Autowired private CoordinatorRepository coordinatorRepository;
+    @Autowired private MailService mailService;
 
     @HandleBeforeCreate
     @Transactional
@@ -47,5 +48,14 @@ public class ProposalPublishEventHandler {
 
         proposal.setStatus(Proposal.Status.PUBLISHED);
         proposalRepository.save(proposal);
+
+        String subject = "Proposal Published";
+        String message = "Dear Proponent, \n\n" +
+                "Your proposal with title \"" +
+                proposal.getTitle() + "has been published. \n\n" +
+                "Best regards, \n\n" +
+                username;
+
+        mailService.sendMessage(proposal.getCreator().getEmail(), subject, message);
     }
 }
