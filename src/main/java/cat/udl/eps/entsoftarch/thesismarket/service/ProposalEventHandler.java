@@ -28,6 +28,7 @@ public class ProposalEventHandler {
 
     @Autowired private ProposalRepository proposalRepository;
     @Autowired private ProponentRepository proponentRepository;
+    @Autowired private MailService mailService;
 
     @HandleBeforeCreate
     @Transactional
@@ -45,6 +46,15 @@ public class ProposalEventHandler {
 
         proposalRepository.save(new_proposal);
 
+
+        String subject = "Create Proposal";
+        String message = "Dear proponent, \n\n" +
+                "It has created a proposal with the title\"" +
+                new_proposal.getTitle() + ".\" \n\n" +
+                "Best regards, \n\n" +
+                "Thesis Market";
+
+        mailService.sendMessage(proponent.getEmail(), subject, message);
     }
 
 }
