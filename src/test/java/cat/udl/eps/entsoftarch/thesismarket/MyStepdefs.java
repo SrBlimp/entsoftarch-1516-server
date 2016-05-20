@@ -605,33 +605,6 @@ public class MyStepdefs {
                 .andExpect(jsonPath("$._embedded.studentOffers", hasSize(3)));
     }
 
-    @When("^I offer as student with name \"([^\"]*)\" to a publication proposal with title \"([^\"]*)\"$")
-    public void iOfferAsStudentWithNameToAPublicationProposalWithTitle(String studentname, String title) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
-        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
-        ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
-
-        Student student = new Student();
-        student.setUsername(studentname);
-
-        studentRepository.save(student);
-
-
-        String message = String.format(
-                "{ \"target\": \"proposalPublications/%s\", \"agent\": \"students/%s\"}",
-                proposalPublication.getId() ,student);
-
-        MockHttpServletRequestBuilder postRequest = post("/studentOffers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(message)
-                .accept(MediaType.APPLICATION_JSON);
-        if (currentUsername != null)
-            postRequest.with(httpBasic(currentUsername, currentPassword));
-
-        result = mockMvc.perform(postRequest);
-
-    }
-
     @When("^I submit an unexisting proposal$")
     public void iSubmitAnUnexistingProposal() throws Throwable {
         String message = String.format(
@@ -752,20 +725,24 @@ public class MyStepdefs {
     }
 
     @And("^there is an existing offer for the user \"([^\"]*)\" and the proposal \"([^\"]*)\"$")
-    public void thereIsAnExistingOfferForTheUserAndTheProposal(String id, String title) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        //throw new PendingException();
+    public void thereIsAnExistingOfferForTheUserAndTheProposal(String studentname, String title) throws Throwable {
         Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
         ProposalPublication proposalPublication = proposalPublicationRepository.findByPublishes(proposalSubmission).get(0);
 
-        Student std = studentRepository.findOne(id);
+        Student student;
+        if (studentRepository.exists(studentname))
+            student = studentRepository.findOne(studentname);
+        else {
+            student = new Student();
+            student.setUsername(studentname);
+            student = studentRepository.save(student);
+        }
 
         StudentOffer offer = new StudentOffer();
-        offer.setAgent(std);
+        offer.setAgent(student);
         offer.setTarget(proposalPublication);
         studentOfferRepository.save(offer);
-
     }
 
     @Then("^I have created a student assignment for student \"([^\"]*)\" and proposal titled \"([^\"]*)\"$")

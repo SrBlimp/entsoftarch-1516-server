@@ -15,20 +15,21 @@ Feature: Offer as student
 
   Scenario: Student is offered for an existing proposal created by a teacher
     Given I login as "student1" with password "password"
-      And there is an existing proposal with title "Really interesting proposal"
+      And there is an existing proposal with title "Really interesting proposal" by "professor1"
       And there is an existing submission of the proposal titled "Really interesting proposal"
       And there is an existing publication of the proposal titled "Really interesting proposal"
     When I offer as student to a publication proposal with title "Really interesting proposal"
     Then I have created an offer student of the publication proposal of the submission of the proposal titled "Really interesting proposal"
+      And an email has been sent to "professor1@thesismarket" with subject "Student Offer" and containing "Really interesting proposal"
 
   Scenario: Student is offered for an existing proposal created by a teacher with a previous offer student
     Given I login as "student1" with password "password"
-      And there is an existing proposal with title "Really interesting proposal"
+      And there is an existing proposal with title "Really interesting proposal" by "professor1"
       And there is an existing submission of the proposal titled "Really interesting proposal"
       And there is an existing publication of the proposal titled "Really interesting proposal"
+      And there is an existing offer for the user "studenta" and the proposal "Really interesting proposal"
+      And there is an existing offer for the user "studentb" and the proposal "Really interesting proposal"
     When I offer as student to a publication proposal with title "Really interesting proposal"
-    When I offer as student with name "studenta" to a publication proposal with title "Really interesting proposal"
-      And I offer as student with name "studentb" to a publication proposal with title "Really interesting proposal"
     Then I have two offer student more created of the publication proposal of the submission of the proposal titled "Really interesting proposal"
 
   Scenario: Student is offered for an unpublished proposal created by a teacher
@@ -53,11 +54,11 @@ Feature: Offer as student
 
   Scenario: Student is offered two times for a same existing proposal created by teacher
     Given I login as "student1" with password "password"
-      And there is an existing proposal with title "Really interesting proposal"
+      And there is an existing proposal with title "Really interesting proposal" by "professor1"
       And there is an existing submission of the proposal titled "Really interesting proposal"
       And there is an existing publication of the proposal titled "Really interesting proposal"
-    When I offer as student with name "student1" to a publication proposal with title "Really interesting proposal"
-      And I offer as student with name "student1" to a publication proposal with title "Really interesting proposal"
+      And there is an existing offer for the user "student1" and the proposal "Really interesting proposal"
+    When I offer as student to a publication proposal with title "Really interesting proposal"
     Then I get error 500 with message "Repeated StudentOffer"
 
   Scenario: Offer as student for a proposal using wrong credentials
@@ -79,3 +80,4 @@ Feature: Offer as student
     When I offer as student to a publication proposal with title "Really interesting proposal"
     Then I get error 403 with message "Access is denied"
       And the status of the proposal titled "Really interesting proposal" is "PUBLISHED"
+    
