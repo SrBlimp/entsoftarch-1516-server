@@ -451,7 +451,8 @@ public class MyStepdefs {
         String publishesUri = JsonPath.read(response, "$._links.publishes.href");
 
         result = mockMvc.perform(get(publishesUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         response = result
                 .andExpect(status().isOk())
