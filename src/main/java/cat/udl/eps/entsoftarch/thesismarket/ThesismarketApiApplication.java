@@ -50,15 +50,17 @@ public class ThesismarketApiApplication {
 		student.setEmail("student1@thesismarket");
 		student = studentRepository.save(student);
 
-		if (env.acceptsProfiles("sample-data")) {
-
+		if (env.acceptsProfiles("sample-data") || env.acceptsProfiles("heroku")) {
+			//Provide real email if using GMail SMTP
 			coordinator.setEmail("thesismarket.udl@gmail.com");
 			coordinator = coordinatorRepository.save(coordinator);
 			professor.setEmail("thesismarket.udl@gmail.com");
 			professor = professorRepository.save(professor);
 			student.setEmail("thesismarket.udl@gmail.com");
 			student = studentRepository.save(student);
+		}
 
+		if (env.acceptsProfiles("sample-data")) {
 			Proposal professorProposal = new Proposal();
 			professorProposal.setTitle("Proposal by Professor");
 			professorProposal.setCreator(professor);
