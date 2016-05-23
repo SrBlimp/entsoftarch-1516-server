@@ -1,5 +1,5 @@
-Feature: List proposals
-  In order to see the relevant proposals to me
+Feature: List proposal submissions
+  In order to see the relevant proposal submissions to me
   I want to list them
 
   Background:
