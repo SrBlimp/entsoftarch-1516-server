@@ -39,18 +39,26 @@ public class ThesismarketApiApplication {
 	public void init(){
 		Coordinator coordinator = new Coordinator();
 		coordinator.setUsername("coordinator1");
-		coordinator.setEmail("thesismarket.udl@gmail.com");
+		coordinator.setEmail("coordinator1@thesismarket");
 		coordinator = coordinatorRepository.save(coordinator);
 		Professor professor = new Professor();
 		professor.setUsername("professor1");
-		professor.setEmail("thesismarket.udl@gmail.com");
+		professor.setEmail("professor1@thesismarket");
 		professor = professorRepository.save(professor);
 		Student student = new Student();
 		student.setUsername("student1");
-		student.setEmail("thesismarket.udl@gmail.com");
+		student.setEmail("student1@thesismarket");
 		student = studentRepository.save(student);
 
 		if (env.acceptsProfiles("sample-data")) {
+
+			coordinator.setEmail("thesismarket.udl@gmail.com");
+			coordinator = coordinatorRepository.save(coordinator);
+			professor.setEmail("thesismarket.udl@gmail.com");
+			professor = professorRepository.save(professor);
+			student.setEmail("thesismarket.udl@gmail.com");
+			student = studentRepository.save(student);
+
 			Proposal professorProposal = new Proposal();
 			professorProposal.setTitle("Proposal by Professor");
 			professorProposal.setCreator(professor);
