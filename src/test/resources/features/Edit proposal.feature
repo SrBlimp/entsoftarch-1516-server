@@ -3,19 +3,19 @@ Feature: Edit proposal
   As a proponent
   I want to edit a proposal
 
-  Scenario: Edit existing proposal logged as professor
+  Scenario: Edit own proposal allowed
     Given I login as "professor1" with password "password"
-      And I create the proposal with title "Very interesting project"
-    When I edit the proposal with title "Very interesting project" with new title "Not interesting project"
+      And there is an existing proposal with title "Very interesting project" by "professor1"
+    When I edit the proposal with title "Very interesting  project" with new title "Not interesting project"
     Then I have edited the proposal with title "Not interesting project"
       And check title editor user is logged
     
-  Scenario: Edit existing proposal logged as student
+  Scenario: Edit professor1 proposal logged as student1 not allowed
     Given I login as "student1" with password "password"
-      And I create the proposal with title "Very interesting project"
+      And there is an existing proposal with title "Very interesting project" by "professor1"
     When I edit the proposal with title "Very interesting project" with new title "Not interesting project"
-    Then I have edited the proposal with title "Not interesting project"
-      And check title editor user is logged
+    Then I get error 403 with message "Access is denied"
+
 
   Scenario: Edit existing proposal with new title null logged as professor
     Given there is an existing proposal with title "Really interesting project" by "professor1"
