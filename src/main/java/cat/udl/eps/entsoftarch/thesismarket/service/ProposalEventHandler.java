@@ -45,14 +45,11 @@ public class ProposalEventHandler {
 
     }
 
-    @HandleBeforeCreate
+    @HandleBeforeSave
     @Transactional
-    @PreAuthorize("hasRole('PROPONENT')")
+    @PreAuthorize("hasRole('PROFESSOR')")
     public void handleProposalBeforeCreate(Proposal proposal){
         logger.info("Before creating: {}", proposal.toString());
-        //String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        //Proponent proponent = proponentRepository.findOne(username);
-        //proposal.setAgent(proponent);
     }
 
 }
