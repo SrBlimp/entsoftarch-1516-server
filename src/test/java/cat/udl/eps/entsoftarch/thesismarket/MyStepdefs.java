@@ -686,16 +686,38 @@ public class MyStepdefs {
 
     @When("^I edit the proposal with title \"([^\"]*)\" with new title \"([^\"]*)\"$")
     public void iEditTheProposalTitleWith(String title, String newTitle) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        //Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         String message = String.format(
                 "{ \"title\" : \"%s\"}", newTitle);
 
-        result = mockMvc.perform(put("/proposals/1")
+        MockHttpServletRequestBuilder postRequest = put("/proposals/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword)));
+                .accept(MediaType.APPLICATION_JSON);
+
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
     }
+
+    /*@When("^I withdraw the submission of the proposal titled \"([^\"]*)\"$")
+    public void iWithdrawTheSubmissionOfTheProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+
+        String message = String.format(
+                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
+
+        MockHttpServletRequestBuilder postRequest = post("/proposalWithdrawals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON);
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
+    }*/
 
     @Given("^there isn't any proposal$")
     public void thereIsnTAnyProposal() throws Throwable {
@@ -756,6 +778,24 @@ public class MyStepdefs {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
+    }
+
+    @Then("^check title editor user is logged$")
+    public void checkTitleEditorUserIsLogged() throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String creatorUri = JsonPath.read(response, "$._links.creator.href");
+
+        result = mockMvc.perform(get(creatorUri)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
     }
 
     @When("^I list proposals$")
