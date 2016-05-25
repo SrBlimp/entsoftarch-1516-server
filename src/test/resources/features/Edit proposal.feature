@@ -33,4 +33,9 @@ Feature: Edit proposal
     When I edit the proposal with title "Very interesting project" with new title "Not interesting project"
     Then I get error 401 with message "Full authentication is required to access this resource"
 
+  Scenario: Edit existent proposal without autentication with null text
+    Given there is an existing proposal with title "Very interesting project" by "professor1"
+    When I edit the proposal with title "Very interesting project" with new title ""
+    Then I get error 401 with message "Full authentication is required to access this resource"
+
    
