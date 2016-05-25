@@ -789,12 +789,28 @@ public class MyStepdefs {
                 .with(httpBasic(currentUsername, currentPassword)));
     }
 
+    @When("^I list proposals publications$")
+    public void iListProposalsPublications() throws Throwable {
+        result = mockMvc.perform(get("/proposalPublications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
     @Then("^I get \"([^\"]*)\" proposals$")
     public void iGetProposals(int count) throws Throwable {
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$._embedded.proposals", hasSize(count)));
+    }
+
+    @Then("^I get \"([^\"]*)\" proposals publications$")
+    public void iGetProposalsPublications(int count) throws Throwable {
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$._embedded.proposalPublications", hasSize(count)));
     }
 
     @Then("^I get proposals all with title containing \"([^\"]*)\"$")
