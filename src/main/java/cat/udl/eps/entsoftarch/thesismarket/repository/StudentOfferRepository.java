@@ -1,6 +1,6 @@
 package cat.udl.eps.entsoftarch.thesismarket.repository;
 
-import cat.udl.eps.entsoftarch.thesismarket.domain.Proposal;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
 import cat.udl.eps.entsoftarch.thesismarket.domain.Student;
 import cat.udl.eps.entsoftarch.thesismarket.domain.StudentOffer;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -17,7 +17,5 @@ import java.util.List;
 public interface StudentOfferRepository extends PagingAndSortingRepository<StudentOffer,Long>{
 
     List<StudentOffer> findByAgent(Student student);
-
-
-
+    List<StudentOffer> findByAgentAndTarget(Student student, ProposalPublication target);
 }
