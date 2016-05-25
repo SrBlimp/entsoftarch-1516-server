@@ -6,6 +6,7 @@ package cat.udl.eps.entsoftarch.thesismarket.repository;
 
 import cat.udl.eps.entsoftarch.thesismarket.domain.Coordinator;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublication;
+import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalPublicationDetails;
 import cat.udl.eps.entsoftarch.thesismarket.domain.ProposalSubmission;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +18,7 @@ import java.util.List;
 
 
 @Repository
-@RepositoryRestResource
+@RepositoryRestResource(excerptProjection = ProposalPublicationDetails.class)
 public interface ProposalPublicationRepository extends PagingAndSortingRepository<ProposalPublication, Long> {
 
     List<ProposalPublication> findByPublishes(ProposalSubmission proposalSubmission);
