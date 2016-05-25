@@ -16,6 +16,9 @@ Feature: Edit proposal
     When I edit the proposal with title "Very interesting project" with new title "Not interesting project"
     Then I get error 403 with message "Access is denied"
 
+
+    #Scenarios with new title null
+
   Scenario: Edit existing proposal with new title null logged as professor
     Given there is an existing proposal with title "Really interesting project" by "professor1"
       And I login as "professor1" with password "password"
@@ -27,6 +30,9 @@ Feature: Edit proposal
       And I login as "student1" with password "password"
     When I edit the proposal with title "Very interesting project" with new title ""
     Then I get error 400 with message "Title cannot be blank"
+
+
+    #Scenarios without autentication!
 
   Scenario: Edit existent proposal without autentication
     Given there is an existing proposal with title "Very interesting project" by "professor1"
