@@ -4,6 +4,7 @@ import cat.udl.eps.entsoftarch.thesismarket.config.MailTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import com.jayway.jsonpath.JsonPath;
+import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -779,6 +780,30 @@ public class MyStepdefs {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$._embedded.proposals[*].title", everyItem(containsString(text))));
+    }
+
+    @When("^I list proposalSubmissions$")
+    public void iListProposalSubmissions() throws Throwable {
+        result = mockMvc.perform(get("/proposalSubmissions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
+    @Then("^I get \"([^\"]*)\" proposalSubmissions$")
+    public void iGetProposalSubmissions(int count) throws Throwable {
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$._embedded.proposalSubmissions", hasSize(count)));
+    }
+
+    @And("^I get proposalSubmissions all with proposal title containing \"([^\"]*)\"$")
+    public void iGetProposalSubmissionsAllWithProposalTitleContaining(String title) throws Throwable {
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$._embedded.proposalSubmissions[*].submits.title", everyItem(containsString(title))));
     }
 }
 
