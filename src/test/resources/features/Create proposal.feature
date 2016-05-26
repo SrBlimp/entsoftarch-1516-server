@@ -8,8 +8,24 @@ Feature: Create proposal
     When I create the proposal with title "Create new proposal"
     Then new proposal with title "Create new proposal"
     Then check proposal status is "DRAFT"
-    Then check proposal creator is user logged
+    And check proposal creator is user logged
     And an email has been sent to "student1@thesismarket" with subject "Create Proposal" and containing "Create new proposal"
+
+  Scenario: Create proposal and check list
+    Given I login as "student1" with password "password"
+    When I create the proposal with title "Create list proposal by student1"
+    And I create the proposal with title "Create list proposal 2 by student1"
+    When I list proposals
+    Then I get "2" proposals
+    And I get proposals all with title containing "student1"
+
+  Scenario: Create proposal and check list without credentials
+    Given I'm not logged in
+    When I create the proposal with title "Create list proposal by student1"
+    When I list proposals
+    Then I get error 401 with message "Bad credentials"
+    And no message has been sent
+
 
   Scenario: Create proposal and already created with title is "Proposal"
     Given I login as "professor1" with password "password"
@@ -41,5 +57,3 @@ Feature: Create proposal
     When I create the proposal with title "Proposal without credentials"
     Then I get error 401 with message "Bad credentials"
     And no message has been sent
-
-
