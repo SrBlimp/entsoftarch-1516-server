@@ -4,6 +4,7 @@ import cat.udl.eps.entsoftarch.thesismarket.config.MailTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import com.jayway.jsonpath.JsonPath;
+import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -685,16 +686,38 @@ public class MyStepdefs {
 
     @When("^I edit the proposal with title \"([^\"]*)\" with new title \"([^\"]*)\"$")
     public void iEditTheProposalTitleWith(String title, String newTitle) throws Throwable {
-        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        //Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
         String message = String.format(
                 "{ \"title\" : \"%s\"}", newTitle);
 
-        result = mockMvc.perform(put("/proposals/1")
+        MockHttpServletRequestBuilder postRequest = put("/proposals/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON)
-                .with(httpBasic(currentUsername, currentPassword)));
+                .accept(MediaType.APPLICATION_JSON);
+
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
     }
+
+    /*@When("^I withdraw the submission of the proposal titled \"([^\"]*)\"$")
+    public void iWithdrawTheSubmissionOfTheProposalTitled(String title) throws Throwable {
+        Proposal proposal = proposalRepository.findByTitleContaining(title).get(0);
+        ProposalSubmission proposalSubmission = proposalSubmissionRepository.findBySubmits(proposal).get(0);
+
+        String message = String.format(
+                "{ \"withdraws\": \"proposalSubmissions/%s\" }", proposalSubmission.getId());
+
+        MockHttpServletRequestBuilder postRequest = post("/proposalWithdrawals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message)
+                .accept(MediaType.APPLICATION_JSON);
+        if (currentUsername != null)
+            postRequest.with(httpBasic(currentUsername, currentPassword));
+
+        result = mockMvc.perform(postRequest);
+    }*/
 
     @Given("^there isn't any proposal$")
     public void thereIsnTAnyProposal() throws Throwable {
@@ -757,6 +780,24 @@ public class MyStepdefs {
 
     }
 
+    @Then("^check title editor user is logged$")
+    public void checkTitleEditorUserIsLogged() throws Throwable {
+        String response = result
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String creatorUri = JsonPath.read(response, "$._links.creator.href");
+
+        result = mockMvc.perform(get(creatorUri)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href", containsString(this.currentUsername)));
+    }
+
     @When("^I list proposals$")
     public void iListProposals() throws Throwable {
         result = mockMvc.perform(get("/proposals")
@@ -779,6 +820,30 @@ public class MyStepdefs {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$._embedded.proposals[*].title", everyItem(containsString(text))));
+    }
+
+    @When("^I list proposalSubmissions$")
+    public void iListProposalSubmissions() throws Throwable {
+        result = mockMvc.perform(get("/proposalSubmissions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
+    }
+
+    @Then("^I get \"([^\"]*)\" proposalSubmissions$")
+    public void iGetProposalSubmissions(int count) throws Throwable {
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$._embedded.proposalSubmissions", hasSize(count)));
+    }
+
+    @And("^I get proposalSubmissions all with proposal title containing \"([^\"]*)\"$")
+    public void iGetProposalSubmissionsAllWithProposalTitleContaining(String title) throws Throwable {
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$._embedded.proposalSubmissions[*].submits.title", everyItem(containsString(title))));
     }
 }
 
