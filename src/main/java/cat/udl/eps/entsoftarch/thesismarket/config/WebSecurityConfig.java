@@ -62,6 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/proposals*/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/proposals*/**").authenticated()
                 //ProposalSubmission
+                .antMatchers(HttpMethod.GET, "/proposalSubmissions*/**").authenticated()
                 .antMatchers(HttpMethod.POST, "/proposalSubmissions*/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/proposalSubmissions*/**").authenticated()
                 .antMatchers(HttpMethod.PUT, "/proposalSubmissions*/**").authenticated()
