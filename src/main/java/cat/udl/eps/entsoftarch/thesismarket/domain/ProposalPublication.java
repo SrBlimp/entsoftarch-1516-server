@@ -65,4 +65,8 @@ public class ProposalPublication extends Event {
     public Set<CoDirectorOffer> getInterestedCoDirectors() { return interestedCoDirectors; }
 
     public void setInterestedCoDirectors(Set<CoDirectorOffer> interestedCoDirectors) { this.interestedCoDirectors = interestedCoDirectors; }
+
+    public Proposal getProposal() {
+        return getPublishes().getSubmits();
+    }
 }

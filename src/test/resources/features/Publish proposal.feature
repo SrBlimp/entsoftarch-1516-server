@@ -105,3 +105,19 @@ Feature: Publish proposal
     When I publish the proposal with title "Student1 publish proposal"
     Then there is not a publication of the submission of the proposal titled "Student1 publish proposal"
     And no message has been sent
+
+  Scenario: List proposals publications
+    Given I login as "coordinator1" with password "password"
+    And there is an existing proposal with title "Coordinator1 proposal publication" by "coordinator1"
+    And there is an existing submission of the proposal titled "Coordinator1 proposal publication"
+    And there is an existing publication of the proposal titled "Coordinator1 proposal publication"
+    And I login as "student1" with password "password"
+    And there is an existing proposal with title "Student1 proposal publication" by "student1"
+    And there is an existing submission of the proposal titled "Student1 proposal publication"
+    And there is an existing publication of the proposal titled "Student1 proposal publication"
+    And I login as "professor1" with password "password"
+    And there is an existing proposal with title "Professor1 proposal publication" by "professor1"
+    And there is an existing submission of the proposal titled "Professor1 proposal publication"
+    And there is an existing publication of the proposal titled "Professor1 proposal publication"
+    When I list proposals publications
+    Then I get "3" proposals publications
