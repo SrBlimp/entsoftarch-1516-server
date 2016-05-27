@@ -4,7 +4,6 @@ import cat.udl.eps.entsoftarch.thesismarket.config.MailTestConfig;
 import cat.udl.eps.entsoftarch.thesismarket.domain.*;
 import cat.udl.eps.entsoftarch.thesismarket.repository.*;
 import com.jayway.jsonpath.JsonPath;
-import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -36,9 +35,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -544,7 +541,8 @@ public class MyStepdefs {
         String proposalSubmissionUri = JsonPath.read(response, "$._links.publishes.href");
 
         result = mockMvc.perform(get(proposalSubmissionUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         response = result
                 .andExpect(status().isOk())
@@ -587,8 +585,9 @@ public class MyStepdefs {
 
         String proposalPublicationUri = JsonPath.read(response, "$._links.target.href");
 
-        result = mockMvc.perform(get(proposalPublicationUri).
-                accept(MediaType.APPLICATION_JSON));
+        result = mockMvc.perform(get(proposalPublicationUri)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         response = result
                 .andDo(print())
@@ -598,7 +597,8 @@ public class MyStepdefs {
         String interestedStudents = JsonPath.read(response, "$._links.interestedStudents.href");
 
         result = mockMvc.perform(get(interestedStudents)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         result
                 .andExpect(status().isOk())
@@ -665,7 +665,8 @@ public class MyStepdefs {
         String publishesUri = JsonPath.read(response, "$._links.publishes.href");
 
         result = mockMvc.perform(get(publishesUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         response = result
                 .andExpect(status().isOk())
