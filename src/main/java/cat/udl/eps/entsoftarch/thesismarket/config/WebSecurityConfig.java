@@ -51,6 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/proposalPublications*/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/proposalPublications*/**").authenticated()
                 //Comment
+                .antMatchers(HttpMethod.GET, "/comments*/**").authenticated()
                 .antMatchers(HttpMethod.PUT, "/comments*/**").authenticated()
                 .antMatchers(HttpMethod.POST, "/comments*/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/comments*/**").authenticated()
