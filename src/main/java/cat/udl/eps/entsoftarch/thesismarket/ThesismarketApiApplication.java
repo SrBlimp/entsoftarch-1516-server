@@ -64,7 +64,7 @@ public class ThesismarketApiApplication {
 			Proposal professorProposal = new Proposal();
 			professorProposal.setTitle("Proposal by Professor");
 			professorProposal.setCreator(professor);
-			professorProposal.setStatus(Proposal.Status.REGISTERED);
+			professorProposal.setStatus(Proposal.Status.PUBLISHED);
 			professorProposal.setDegree("Computer Science BSc");
 			professorProposal.setTopics(new HashSet<>(Arrays.asList("NoSQL", "Databases")));
 			professorProposal = proposalRepository.save(professorProposal);
@@ -73,9 +73,17 @@ public class ThesismarketApiApplication {
 			studentProposal.setTitle("Proposal by Student");
 			studentProposal.setCreator(student);
 			studentProposal.setStatus(Proposal.Status.DRAFT);
-			professorProposal.setDegree("Computer Science BSc");
-			professorProposal.setTopics(new HashSet<>(Collections.singletonList("Web Engineering")));
+			studentProposal.setDegree("Computer Science BSc");
+			studentProposal.setTopics(new HashSet<>(Collections.singletonList("Web Engineering")));
 			studentProposal = proposalRepository.save(studentProposal);
+
+			Proposal registeredProposal = new Proposal();
+			registeredProposal.setTitle("Finished Project");
+			registeredProposal.setCreator(professor);
+			registeredProposal.setStatus(Proposal.Status.REGISTERED);
+			registeredProposal.setDegree("Computer Science BSc");
+			registeredProposal.setTopics(new HashSet<>(Collections.singletonList("Programming")));
+			registeredProposal = proposalRepository.save(registeredProposal);
 
 			ProposalSubmission proposalSubmission = new ProposalSubmission();
 			proposalSubmission.setAgent(professor);
@@ -83,11 +91,23 @@ public class ThesismarketApiApplication {
 			proposalSubmission.setDateTime(ZonedDateTime.now());
 			proposalSubmission = proposalSubmissionRepository.save(proposalSubmission);
 
+			ProposalSubmission registeredProposalSubmission = new ProposalSubmission();
+			registeredProposalSubmission.setAgent(professor);
+			registeredProposalSubmission.setSubmits(professorProposal);
+			registeredProposalSubmission.setDateTime(ZonedDateTime.now());
+			registeredProposalSubmission = proposalSubmissionRepository.save(registeredProposalSubmission);
+
 			ProposalPublication proposalPublication = new ProposalPublication();
 			proposalPublication.setAgent(coordinator);
 			proposalPublication.setPublishes(proposalSubmission);
 			proposalPublication.setDateTime(ZonedDateTime.now());
 			proposalPublication = proposalPublicationRepository.save(proposalPublication);
+
+			ProposalPublication registeredProposalPublication = new ProposalPublication();
+			registeredProposalPublication.setAgent(coordinator);
+			registeredProposalPublication.setPublishes(registeredProposalSubmission);
+			registeredProposalPublication.setDateTime(ZonedDateTime.now());
+			registeredProposalPublication = proposalPublicationRepository.save(registeredProposalPublication);
 
 			Comment comment = new Comment();
 			comment.setAuthor(student);
@@ -101,14 +121,20 @@ public class ThesismarketApiApplication {
 			studentOffer.setDateTime(ZonedDateTime.now());
 			studentOffer = studentOfferRepository.save(studentOffer);
 
+			StudentOffer assignedStudentOffer = new StudentOffer();
+			assignedStudentOffer.setAgent(student);
+			assignedStudentOffer.setTarget(proposalPublication);
+			assignedStudentOffer.setDateTime(ZonedDateTime.now());
+			assignedStudentOffer = studentOfferRepository.save(assignedStudentOffer);
+
 			StudentsAssignment studentsAssignment = new StudentsAssignment();
-			studentsAssignment.setAssigns(studentOffer);
+			studentsAssignment.setAssigns(assignedStudentOffer);
 			studentsAssignment.setDateTime(ZonedDateTime.now());
 			studentsAssignment = studentsAssignmentRepository.save(studentsAssignment);
 
 			ProposalRegistration proposalRegistration = new ProposalRegistration();
 			proposalRegistration.setAgent(coordinator);
-			proposalRegistration.setRegisters(proposalPublication);
+			proposalRegistration.setRegisters(registeredProposalPublication);
 			proposalRegistration.setDateTime(ZonedDateTime.now());
 			proposalRegistration = proposalRegistrationRepository.save(proposalRegistration);
 		}
