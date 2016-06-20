@@ -93,7 +93,7 @@ public class ThesismarketApiApplication {
 
 			ProposalSubmission registeredProposalSubmission = new ProposalSubmission();
 			registeredProposalSubmission.setAgent(professor);
-			registeredProposalSubmission.setSubmits(professorProposal);
+			registeredProposalSubmission.setSubmits(registeredProposal);
 			registeredProposalSubmission.setDateTime(ZonedDateTime.now());
 			registeredProposalSubmission = proposalSubmissionRepository.save(registeredProposalSubmission);
 
