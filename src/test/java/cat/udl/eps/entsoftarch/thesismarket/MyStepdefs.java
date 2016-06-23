@@ -332,7 +332,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalRegistrations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I register un-published proposal$")
@@ -343,7 +344,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalRegistrations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
     @When("^I register un-assigned proposal$")
@@ -354,7 +356,8 @@ public class MyStepdefs {
         result = mockMvc.perform(post("/proposalRegistrations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(message)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
     }
 
 
@@ -654,7 +657,8 @@ public class MyStepdefs {
         String registersUri = JsonPath.read(response, "$._links.registers.href");
 
         result = mockMvc.perform(get(registersUri)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON)
+                .with(httpBasic(currentUsername, currentPassword)));
 
         response = result
                 .andExpect(status().isOk())
