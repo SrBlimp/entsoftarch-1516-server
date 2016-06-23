@@ -68,12 +68,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/proposalSubmissions*/**").authenticated()
                 .antMatchers(HttpMethod.PUT, "/proposalSubmissions*/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/proposalSubmissions*/**").authenticated()
-                .anyRequest().permitAll()
                 //ProposalRegistration
-                .antMatchers(HttpMethod.POST, "/proposalRegistrations*/**").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/proposalRegistrations*/**").authenticated()
-                .antMatchers(HttpMethod.PUT, "/proposalRegistrations*/**").authenticated()
-                .antMatchers(HttpMethod.PATCH, "/proposalRegistrations*/**").authenticated()
+                .antMatchers("/proposalRegistrations*/**").hasAnyRole("ADMIN", "COORDINATOR")
                 .anyRequest().permitAll()
                 .and()
             .httpBasic()
